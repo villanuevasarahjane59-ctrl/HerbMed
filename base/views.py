@@ -74,18 +74,7 @@ def user_dashboard(request):
 
     grouped_herbs_display = {}
     
-    seen = set()   # <--- track herb names already displayed
-
     for herb in herbs:
-
-        # If we've already displayed an herb with the same name, skip it
-        if herb.name.lower() in seen:
-            continue
-
-        # mark this herb name as shown
-        seen.add(herb.name.lower())
-
-        # normal grouping logic
         condition_key = herb.condition
         if condition_key not in grouped_herbs_display:
             grouped_herbs_display[condition_key] = {

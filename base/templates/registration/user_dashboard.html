@@ -3129,7 +3129,11 @@ main {
             <h3>{{ group.display_name }}</h3>
             <div class="image-grid">
               {% for herb in group.herbs %}
-              <div class="herb-card" data-key="{{ herb.name|slugify }}">
+              <div class="herb-card" 
+                   data-key="{{ herb.name|slugify }}" 
+                   data-herb-name="{{ herb.name|lower }}" 
+                   data-scientific-name="{{ herb.scientific_name|lower }}" 
+                   data-condition="{{ condition_key }}">
                 <div class="image">
                   {% if herb.image %}
                     <img src="{{ herb.image.url }}" alt="{{ herb.name }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
@@ -3240,6 +3244,18 @@ main {
       const closeBtn = document.getElementById('closeOverlay');
       const searchInput = document.getElementById('herbSearch');
       const searchBtn = document.getElementById('searchBtn');
+      
+      // Hide duplicate herbs on initial load
+      const seenHerbs = new Set();
+      herbCards.forEach(card => {
+        const herbName = card.dataset.herbName;
+        if (seenHerbs.has(herbName)) {
+          card.style.display = 'none';
+          card.classList.add('duplicate-herb');
+        } else {
+          seenHerbs.add(herbName);
+        }
+      });
 
       function openHerbOverlayByKey(key) {
         const data = herbs[key];
@@ -3338,10 +3354,49 @@ main {
 
       // Search functionality
       function filterHerbs() {
-        const query = searchInput.value.toLowerCase();
+        const query = searchInput.value.toLowerCase().trim();
+        const conditionSections = document.querySelectorAll('.condition-section');
+        
+        if (query === '') {
+          // Reset to initial state: hide duplicates, show all sections
+          const seenHerbs = new Set();
+          herbCards.forEach(card => {
+            const herbName = card.dataset.herbName;
+            if (seenHerbs.has(herbName)) {
+              card.style.display = 'none';
+            } else {
+              card.style.display = '';
+              seenHerbs.add(herbName);
+            }
+          });
+          conditionSections.forEach(section => section.style.display = '');
+          return;
+        }
+        
+        // When searching, show ALL matching herbs (including duplicates)
+        // First, make all cards visible to search through them
         herbCards.forEach(card => {
-          const name = card.dataset.key.toLowerCase();
-          card.style.display = name.includes(query) ? '' : 'none';
+          card.style.display = '';
+        });
+        
+        conditionSections.forEach(section => {
+          const cardsInSection = section.querySelectorAll('.herb-card');
+          let hasVisibleCards = false;
+          
+          cardsInSection.forEach(card => {
+            const herbName = card.querySelector('h4').textContent.toLowerCase();
+            const herbKey = card.dataset.key.toLowerCase();
+            const scientificName = card.dataset.scientificName ? card.dataset.scientificName.toLowerCase() : '';
+            
+            if (herbName.includes(query) || herbKey.includes(query) || scientificName.includes(query)) {
+              card.style.display = '';
+              hasVisibleCards = true;
+            } else {
+              card.style.display = 'none';
+            }
+          });
+          
+          section.style.display = hasVisibleCards ? '' : 'none';
         });
       }
 
