@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import JSONField
-from .storage import StaticFileStorage
 
 class CustomUser(AbstractUser):
     fullname = models.CharField(max_length=255)
@@ -26,7 +25,7 @@ class Herb(models.Model):
     name = models.CharField(max_length=255)
     scientific_name = models.CharField(max_length=255)
     condition = models.CharField(max_length=50, choices=CONDITION_CHOICES)
-    image = models.ImageField(upload_to='', storage=StaticFileStorage(), blank=True, null=True)
+    image = models.ImageField(upload_to='herbs/', blank=True, null=True)
     image_url = models.URLField(blank=True, null=True, help_text="Alternative to image upload - paste image URL")
     benefits = models.TextField(help_text="List benefits separated by commas", blank=True)
     prescription = models.TextField(blank=True)
@@ -45,10 +44,11 @@ class Herb(models.Model):
         return []
 
     def get_image_url(self):
-        if self.image:
-            return self.image.url
-        elif self.image_url:
+        # Prioritize image_url field for production
+        if self.image_url:
             return self.image_url
+        elif self.image:
+            return self.image.url
         return '/static/base/assets/herbs_292843331-removebg-preview.png'  # default
     
     def __str__(self):
