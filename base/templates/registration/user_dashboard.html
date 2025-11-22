@@ -3130,7 +3130,7 @@ main {
             <div class="image-grid">
               {% for herb in group.herbs %}
               <div class="herb-card" 
-                   data-key="{{ herb.name|slugify }}" 
+                   data-key="{{ herb.name|slugify }}_{{ condition_key }}" 
                    data-herb-name="{{ herb.name|lower }}" 
                    data-scientific-name="{{ herb.scientific_name|lower }}" 
                    data-condition="{{ condition_key }}">
@@ -3222,8 +3222,8 @@ main {
     const herbs = {
    {% for condition_key, group in grouped_herbs.items %}
     {% for herb in group.herbs %}
-    "{{ herb.name|slugify }}": {
-      key: "{{ herb.name|slugify }}",
+    "{{ herb.name|slugify }}_{{ condition_key }}": {
+      key: "{{ herb.name|slugify }}_{{ condition_key }}",
         name: "{{ herb.name }}",
         scientific_name: "{{ herb.scientific_name|default:'' }}",
         img: "{% if herb.image %}{{ herb.image.url }}{% elif herb.image_url %}{{ herb.image_url }}{% else %}{% static 'base/assets/herbs_292843331-removebg-preview.png' %}{% endif %}",
@@ -3245,15 +3245,17 @@ main {
       const searchInput = document.getElementById('herbSearch');
       const searchBtn = document.getElementById('searchBtn');
       
-      // Hide duplicate herbs on initial load
+      // Hide duplicate herbs on initial load (same herb in same condition only)
       const seenHerbs = new Set();
       herbCards.forEach(card => {
         const herbName = card.dataset.herbName;
-        if (seenHerbs.has(herbName)) {
+        const condition = card.dataset.condition;
+        const uniqueKey = `${herbName}_${condition}`;
+        if (seenHerbs.has(uniqueKey)) {
           card.style.display = 'none';
           card.classList.add('duplicate-herb');
         } else {
-          seenHerbs.add(herbName);
+          seenHerbs.add(uniqueKey);
         }
       });
 
@@ -3358,15 +3360,17 @@ main {
         const conditionSections = document.querySelectorAll('.condition-section');
         
         if (query === '') {
-          // Reset to initial state: hide duplicates, show all sections
+          // Reset to initial state: hide duplicates within same condition only
           const seenHerbs = new Set();
           herbCards.forEach(card => {
             const herbName = card.dataset.herbName;
-            if (seenHerbs.has(herbName)) {
+            const condition = card.dataset.condition;
+            const uniqueKey = `${herbName}_${condition}`;
+            if (seenHerbs.has(uniqueKey)) {
               card.style.display = 'none';
             } else {
               card.style.display = '';
-              seenHerbs.add(herbName);
+              seenHerbs.add(uniqueKey);
             }
           });
           conditionSections.forEach(section => section.style.display = '');
