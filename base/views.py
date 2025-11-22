@@ -281,3 +281,23 @@ def create_admin_user(request):
     )
     
     return HttpResponse('Admin user created successfully! Username: admin, Password: herbmed123')
+
+def populate_herbs(request):
+    from django.core.management import call_command
+    from io import StringIO
+    
+    out = StringIO()
+    call_command('populate_herbs', stdout=out)
+    output = out.getvalue()
+    
+    return HttpResponse(f'Herbs populated successfully!<br><pre>{output}</pre>')
+
+def run_migrations(request):
+    from django.core.management import call_command
+    from io import StringIO
+    
+    out = StringIO()
+    call_command('create_migration', stdout=out)
+    output = out.getvalue()
+    
+    return HttpResponse(f'Migrations completed!<br><pre>{output}</pre>')

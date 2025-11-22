@@ -25,6 +25,8 @@ urlpatterns = [
 
      path('delete-account/', views.delete_account, name='delete_account'),
      path('create-admin/', views.create_admin_user, name='create_admin'),
+     path('populate-herbs/', views.populate_herbs, name='populate_herbs'),
+     path('run-migrations/', views.run_migrations, name='run_migrations'),
 ]
 
 if settings.DEBUG:
