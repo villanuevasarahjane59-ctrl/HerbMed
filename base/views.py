@@ -6,6 +6,7 @@ from .forms import RegisterForm, LoginForm
 from .models import CustomUser, Herb
 from .models import Herb
 from django.contrib.auth import get_user_model, logout
+from django.http import HttpResponse
 import json
 
 def homepage(request):
@@ -258,3 +259,19 @@ def delete_account(request):
     
     # If GET request, show a confirmation page
     return render(request, 'accounts/delete_acc.html')
+
+def create_admin_user(request):
+    User = get_user_model()
+    
+    # Delete existing admin if exists
+    User.objects.filter(username='admin').delete()
+    
+    # Create new superuser
+    user = User.objects.create_superuser(
+        username='admin',
+        email='admin@herbmed.com',
+        password='herbmed123',
+        fullname='Admin User'
+    )
+    
+    return HttpResponse('Admin user created successfully! Username: admin, Password: herbmed123')

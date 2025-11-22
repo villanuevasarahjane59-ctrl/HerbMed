@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .create_admin import create_admin_user
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -25,7 +24,7 @@ urlpatterns = [
     path('adminpanel/delete/<int:pk>/', views.delete_herb, name='delete_herb'),
 
      path('delete-account/', views.delete_account, name='delete_account'),
-     path('create-admin/', create_admin_user, name='create_admin'),
+     path('create-admin/', views.create_admin_user, name='create_admin'),
 ]
 
 if settings.DEBUG:
