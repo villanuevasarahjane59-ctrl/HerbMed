@@ -123,6 +123,7 @@ def add_herb(request):
         prescription = request.POST.get("prescription")
         advice = request.POST.get("advice")
         image = request.FILES.get("image")
+        image_url = request.POST.get("image_url")
 
         # MULTIPLE LOCATIONS
         locations_json = request.POST.get("location_list")
@@ -138,6 +139,7 @@ def add_herb(request):
             prescription=prescription,
             advice=advice,
             image=image,
+            image_url=image_url,
             locations=locations  # MUST USE JSONFIELD IN MODEL
         )
 

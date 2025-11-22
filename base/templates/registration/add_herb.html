@@ -180,8 +180,12 @@
         <label for="advice">Additional Advice</label>
         <textarea id="advice" name="advice" placeholder="Any helpful advice or caution" required></textarea>
 
-        <label for="image">Herb Image</label>
-        <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)" required>
+        <label for="image">Herb Image (Upload)</label>
+        <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+        
+        <label for="image_url">OR Image URL/Path</label>
+        <input type="text" id="image_url" name="image_url" placeholder="e.g. /static/base/assets/cold/ginger.webp or https://example.com/image.jpg">
+        <small style="color: #666; font-size: 0.9rem;">Use static file path like: /static/base/assets/cold/ginger.webp</small>
 
         <label for="location">Location</label>
         <input type="hidden" id="latitude" name="latitude">
