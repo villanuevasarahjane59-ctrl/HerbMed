@@ -45,8 +45,8 @@ class Herb(models.Model):
 
     def get_image_url(self):
         # Prioritize image_url field for production
-        if self.image_url:
-            return self.image_url
+        if self.image_url and self.image_url.strip():
+            return self.image_url.strip()
         elif self.image:
             return self.image.url
         return '/static/base/assets/herbs_292843331-removebg-preview.png'  # default

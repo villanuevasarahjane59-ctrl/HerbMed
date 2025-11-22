@@ -3132,9 +3132,11 @@ main {
               <div class="herb-card" data-key="{{ herb.name|slugify }}">
                 <div class="image">
                   {% if herb.image %}
-                  <img src="{{ herb.image.url }}" alt="{{ herb.name }}">
+                    <img src="{{ herb.image.url }}" alt="{{ herb.name }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
+                  {% elif herb.image_url %}
+                    <img src="{{ herb.image_url }}" alt="{{ herb.name }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
                   {% else %}
-                  <img src="{% static 'base/assets/no-image.png' %}" alt="No image">
+                    <img src="{% static 'base/assets/herbs_292843331-removebg-preview.png' %}" alt="{{ herb.name }}">
                   {% endif %}
                 </div>
                 <h4>{{ herb.name }}</h4>
@@ -3220,7 +3222,7 @@ main {
       key: "{{ herb.name|slugify }}",
         name: "{{ herb.name }}",
         scientific_name: "{{ herb.scientific_name|default:'' }}",
-        img: "{% if herb.image %}{{ herb.image.url }}{% else %}{% static 'base/assets/no-image.png' %}{% endif %}",
+        img: "{% if herb.image %}{{ herb.image.url }}{% elif herb.image_url %}{{ herb.image_url }}{% else %}{% static 'base/assets/herbs_292843331-removebg-preview.png' %}{% endif %}",
         benefits: ["{{ herb.benefits|escapejs }}"],
         prescription: "{{ herb.prescription|escapejs }}",
         advice: "{{ herb.advice|escapejs }}",

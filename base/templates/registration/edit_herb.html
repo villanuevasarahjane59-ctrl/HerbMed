@@ -189,13 +189,20 @@
         <label for="advice">Additional Advice</label>
         <textarea id="advice" name="advice" required>{{ herb.advice }}</textarea>
 
-        <label for="image">Herb Image</label>
+        <label for="image">Herb Image (Upload)</label>
         <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+        
+        <label for="image_url">OR Image URL/Path</label>
+        <input type="text" id="image_url" name="image_url" value="{{ herb.image_url }}" placeholder="e.g. /static/base/assets/cold/ginger.webp or https://example.com/image.jpg">
+        <small style="color: #666; font-size: 0.9rem;">Use static file path like: /static/base/assets/cold/ginger.webp</small>
+        
         <div class="preview-container">
             {% if herb.image %}
                 <img id="preview" src="{{ herb.image.url }}" alt="{{ herb.name }}">
+            {% elif herb.image_url %}
+                <img id="preview" src="{{ herb.image_url }}" alt="{{ herb.name }}">
             {% else %}
-                <img id="preview" src="#" alt="Preview" style="display:none;">
+                <img id="preview" src="{% static 'base/assets/herbs_292843331-removebg-preview.png' %}" alt="Preview">
             {% endif %}
         </div>
 

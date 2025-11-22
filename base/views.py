@@ -169,6 +169,11 @@ def edit_herb(request, pk):
         # image (optional)
         if request.FILES.get("image"):
             herb.image = request.FILES["image"]
+        
+        # image_url (optional)
+        image_url = request.POST.get("image_url")
+        if image_url:
+            herb.image_url = image_url
 
         # --- LOCATION HANDLING ---
         # 1) If a JSON 'location_list' was submitted (from the edit form), parse and save it:
