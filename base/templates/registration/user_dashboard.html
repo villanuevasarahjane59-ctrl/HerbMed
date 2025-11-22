@@ -796,11 +796,11 @@
   }
 
   header {
+    position: -webkit-sticky;
     position: sticky;
-    /* Makes the header stick to the top */
     top: 0;
-    /* Stick at the top of the page */
-    z-index: 999;
+    z-index: 9999;
+    width: 100%;
     background-image: linear-gradient(to right,
         rgba(13, 59, 2, 0.88),
         rgba(120, 233, 27, 0.6)),
@@ -812,6 +812,7 @@
     background-color: #3a773a;
     color: white;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
   }
 
   #popup-overlay {
