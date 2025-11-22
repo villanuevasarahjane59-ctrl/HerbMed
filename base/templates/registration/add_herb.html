@@ -1,0 +1,252 @@
+{% load static %}
+
+{% block content %}
+<style>
+    body {
+        background: #f6fff8;
+        font-family: "Poppins", sans-serif;
+        color: #2f3e46;
+    }
+
+    .form-container {
+        max-width: 600px;
+        margin: 60px auto;
+        background: #ffffff;
+        padding: 40px 50px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .form-container:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .form-header h2 {
+        color: #2e7d32;
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+
+    form label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+        color: #1b4332;
+    }
+
+    input[type="text"],
+    select,
+    textarea,
+    input[type="file"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        font-size: 1rem;
+        margin-bottom: 20px;
+        transition: border-color 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #2e7d32;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .btn-submit {
+        display: inline-block;
+        background: linear-gradient(135deg, #66bb6a, #2e7d32);
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 500;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        background: linear-gradient(135deg, #43a047, #1b5e20);
+        transform: translateY(-2px);
+    }
+
+    .preview-container {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .preview-container img {
+        max-width: 150px;
+        max-height: 150px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        object-fit: cover;
+        display: none;
+    }
+/* Modern herbal-themed map marker */
+.custom-herb-marker {
+    background-color: #2e7d32;
+    border: 3px solid #a5d6a7;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: block;
+    box-shadow: 0 0 10px rgba(46, 125, 50, 0.7);
+    position: relative;
+}
+
+.custom-herb-marker:hover {
+    transform: scale(1.2);
+    transition: 0.2s ease-in-out;
+}
+
+/* Subtle pulse animation */
+.custom-herb-marker::after {
+    content: "";
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: pulse 2s infinite;
+    background: rgba(76, 175, 80, 0.4);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: .8;
+    }
+    70% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+</style>
+<div class="form-container">
+    <div class="form-header">
+        <h2>Add New Herbal Plant</h2>
+        <p style="color:#52796f;">Contribute your knowledge to natural healing.</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label for="name">Herb Name</label>
+        <input type="text" id="name" name="name" placeholder="e.g. Aloe Vera" required>
+
+        <label for="scientific_name">Scientific Name</label>
+        <input type="text" id="scientific_name" name="scientific_name" placeholder="e.g. Aloe Vera" required>
+
+        <label for="condition">Condition</label>
+        <select id="condition" name="condition" required>
+            <option value="">-- Select Condition --</option>
+            <option value="cough">Cough</option>
+            <option value="cold">Cold & Flu</option>
+            <option value="fever">Fever</option>
+            <option value="skin">Skin</option>
+            <option value="wound">Wound</option>
+        </select>
+
+        <label for="benefits">Benefits</label>
+        <textarea id="benefits" name="benefits" placeholder="List benefits separated by commas" required></textarea>
+
+        <label for="prescription">Prescription</label>
+        <textarea id="prescription" name="prescription" placeholder="Enter recommended usage" required></textarea>
+
+        <label for="procedure">Procedure</label>
+        <textarea id="procedure" name="procedure" placeholder="Step-by-step procedure" required></textarea>
+
+        <label for="advice">Additional Advice</label>
+        <textarea id="advice" name="advice" placeholder="Any helpful advice or caution" required></textarea>
+
+        <label for="image">Herb Image</label>
+        <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)" required>
+
+        <label for="location">Location</label>
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
+        <input type="hidden" id="location_list" name="location_list">
+
+        <!-- Coordinate Display -->
+        <div id="coordinateDisplay" style="margin-top: 10px; display:none; color:#1b4332;">
+            <strong>Pinned Location:</strong>
+            <span id="coordText"></span>
+        </div>
+        <!-- Map Preview -->
+        <div id="add-map" style="height: 300px; width: 100%; margin: 15px 0; border-radius: 10px;"></div>
+
+        <button type="submit" class="btn-submit">Add Herb</button>
+    </form>
+</div>
+
+
+<!-- Scripts -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+    const herbPin = L.divIcon({
+    className: "", // needed! or Leaflet injects default "leaflet-div-icon"
+    html: `<span class="custom-herb-marker"></span>`,
+    iconSize: [26, 26],
+    iconAnchor: [13, 13],
+});
+    // Image preview
+    function previewImage(event) {
+        const image = document.getElementById('preview');
+        image.src = URL.createObjectURL(event.target.files[0]);
+        image.style.display = 'block';
+    }
+
+    // Initialize map
+    const addMap = L.map('add-map').setView([11.5908, 124.4836], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(addMap);
+
+    let locations = [];
+
+    // Store all markers
+    let markers = [];
+
+   addMap.on('click', function(e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+
+        // Add marker
+        L.marker([lat, lng], { icon: herbPin }).addTo(addMap);
+
+
+        // Add to list
+        locations.push({lat: lat, lng: lng});
+
+        // Show on screen
+        document.getElementById("coordinateDisplay").style.display = "block";
+        document.getElementById("coordText").textContent = 
+            locations.map(l => `${l.lat.toFixed(5)}, ${l.lng.toFixed(5)}`).join(" | ");
+
+        // Store JSON for backend
+        document.getElementById("location_list").value = JSON.stringify(locations);
+    });
+</script>
+{% endblock %}

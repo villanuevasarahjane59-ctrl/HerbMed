@@ -1,0 +1,3569 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HerbMed | Herbal Medicine</title>
+  <link rel="icon" type="image/png" href="{% static 'base/assets/logo.png' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+eYzvL4YItdPz/1hVZfnHki4H9oAXmF2oE6kz5qWg=" crossorigin="" />
+</head>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=BBH+Sans+Hegarty&family=Poppins:wght@700;800;900&display=swap');
+
+  :root {
+    --primary-color: #31ac12;
+    --secondary-color--dark: #e2e2e2;
+    --primary-color--light: #06f827ff;
+    --secondary-color--light: #25960fff;
+    --primary-color--dark: #68be06;
+    --text-light: #fefffe;
+    --max-width: 1400px;
+    --card-bg: #fff;
+  }
+
+  * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+   body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #74f77f 0%, #60cc64 100%);
+    color: var(--text-dark);
+    position: relative;
+    overflow-x: hidden;
+  }
+  #home {
+    background: 
+      linear-gradient(100deg, rgba(150, 175, 141, 0.95) 0%, rgba(212, 248, 213, 0.92) 5%),
+      url('https://img.freepik.com/premium-photo/harmony-herbs-culinary-elegance_705284-33964.jpg?w=900');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    
+  }
+
+  #home::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 40%, rgba(129, 199, 132, 0.1) 0%, transparent 10%),
+      radial-gradient(circle at 80% 60%, rgba(102, 187, 106, 0.1) 0%, transparent 10%);
+    pointer-events: none;
+  }
+
+  .healing-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5rem 3rem;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    gap: 3rem;
+  }
+
+  .healing-section .text-content {
+    flex: 1 1 500px;
+    animation: fadeInLeft 1s ease-out;
+  }
+
+  @keyframes fadeInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .healing-section .section_header {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 900;
+    color: #035c09;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.8);
+  }
+
+  .healing-section .section_header span {
+    background: linear-gradient(135deg, #08630c, #24f12e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .healing-section p {
+    font-size: 1.6rem;
+    color: #089c10;
+    font-weight: 600;
+    line-height: 1.9;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.3px;
+  }
+
+  .healing-section .image-content {
+    flex: 0 0 auto;
+    animation: fadeInRight 1s ease-out;
+  }
+
+  @keyframes fadeInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .healing-section .image-content img {
+    width: 600px;
+    max-width: 300%;
+    filter: drop-shadow(0px 20px 40px rgba(46, 125, 50, 0.3));
+    animation: floatImage 6s ease-in-out infinite;
+  }
+  .healing-section .image-content img:hover {
+    transform: scale(1.05) rotate(-2deg);
+    transition: transform 0.4s ease;
+  }
+
+  .btn {
+    padding: .75rem 2rem;
+    outline: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 900;
+    white-space: nowrap;
+    color: var(--text-light);
+    background-color: var(--primary-color--dark);
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn:hover {
+    background-color: var(--primary-color);
+  }
+
+  img {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  .nav_container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: .6rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  header .logo-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+  }
+
+  header img {
+    height: 150px;
+    width: auto;
+    display: block;
+  }
+
+  header h1 {
+    font-size: 3rem;
+    margin: 0;
+    letter-spacing: 1px;
+  }
+
+  header h1 span {
+    font-size: 3rem;
+    margin: 0;
+    letter-spacing: 1px;
+  }
+
+  .button-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #3a773a;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn:hover {
+    background-color: #2f5f2f;
+    color: white;
+  }
+
+  .nav_links {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    align-items: center;
+  }
+
+  .nav_links li a {
+    color: var(--text-light);
+    padding: .45rem .7rem;
+    border-radius: 6px;
+    font-weight: 600;
+    position: relative;
+    transition: color .2s ease;
+  }
+
+  .nav_links li a::after {
+    content: '';
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    height: 2px;
+    bottom: -8px;
+    background: transparent;
+    transition: background .18s ease, transform .18s ease;
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  .nav_links li a.active {
+    color: #fff;
+  }
+
+  .nav_links li a.active::after {
+    background: linear-gradient(90deg, #22eb2c, #73e240);
+    transform: scaleX(1);
+  }
+
+  .nav_links li a:hover {
+    color: var(--primary-color--dark);
+  }
+
+  .search-row {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: .75rem;
+  }
+
+  .search-container {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 2px solid #16a34a;
+    border-radius: 28px;
+    padding: 6px 10px;
+    box-shadow: 0 6px 18px rgba(22, 163, 74, 0.08);
+    width: 420px;
+    max-width: 100%;
+    transition: transform .12s ease;
+  }
+
+  .search-container:focus-within {
+    transform: translateY(-2px);
+  }
+
+  .search-input {
+    border: none;
+    outline: none;
+    padding: 8px;
+    font-size: 1rem;
+    width: 100%;
+    background: transparent;
+    color: #065f46;
+  }
+
+  .search-input::placeholder {
+    color: #6b7280;
+    font-style: italic;
+  }
+
+  .search-btn {
+    border: none;
+    background: linear-gradient(135deg, #16a34a, #4ade80);
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  .search-btn {
+    background: linear-gradient(135deg, #16a34a, #4ade80);
+    border: none;
+    padding: 8px;
+    color: white;
+    font-size: 16px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+
+  .search-btn:hover {
+    background: linear-gradient(135deg, #15803d, #22c55e);
+    transform: scale(1.1);
+  }
+
+  .hero-section {
+    background: linear-gradient(50deg, var(--primary-color--light), var(--secondary-color--light));
+    padding: 1rem 1rem;
+    text-align: right;
+    color: var(--text-light);
+  }
+
+  .hero-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .hero-content p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+
+  .herbal-section {
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  .herbal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .herb-card {
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .herb-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .herb-card h4 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .condition-galleries {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .condition-galleries h1 {
+    margin-right: 10%;
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 5rem;
+  }
+
+  .condition-galleries h2 {
+    color: var(--secondary-color--light);
+    margin: 1.25rem 0;
+    font-size: 3rem;
+    text-align: left;
+  }
+
+  .condition-section {
+    margin-bottom: 4rem;
+  }
+
+  .condition-section h3 {
+    color: var(--secondary-color--light);
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .image-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: start;
+  }
+
+  .herb-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: .9rem;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.07);
+    transition: transform .18s ease, box-shadow .18s ease;
+    cursor: pointer;
+    text-align: center;
+    overflow: visible;
+  }
+
+  .herb-card:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .herb-card .image {
+    position: relative;
+    height: 200px;
+    overflow: visible;
+  }
+
+  .herb-card .image {
+  display: flex;
+  justify-content: center; /* horizontal center */
+  align-items: center;     /* vertical center */
+  height: 180px;           /* adjust container height if needed */
+  overflow: hidden;
+}
+
+  .herb-card:hover img {
+    transform: scale(1.50)rotate(-3deg);
+  }
+
+  .herb-card h4 {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    margin-top: -10px;
+    margin-bottom: 0.5rem;
+  }
+
+  .herb-card p {
+    color: #555;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .herb-card::before {
+    content: "";
+    position: absolute;
+    top: -40%;
+    left: -40%;
+    width: 180%;
+    height: 180%;
+    background: radial-gradient(circle, rgba(163, 177, 138, 0.15) 0%, transparent 70%);
+    z-index: 1;
+    transition: opacity 0.3s ease;
+  }
+
+  .herb-card:hover::before {
+    opacity: 1;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  .herb-card {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .herb-card .image img {
+    width: 120%;
+    max-width: 200px;
+    height: auto;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+  }
+
+  .herb-card:hover .image img {
+    transform: scale(1.1);
+  }
+
+  .herb-card .image img {
+    width: 120%;
+    max-width: 200px;
+    height: auto;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+  }
+
+  .herb-card:hover .image img {
+    transform: scale(1.1);
+  }
+
+  .herb-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px);
+  }
+
+  .herb-overlay.active {
+    display: flex;
+    animation: fadeIn 0.25s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* --- Herb Overlay Improved Design --- */
+  .herb-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 25, 10, 0.7);
+    backdrop-filter: blur(6px);
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    padding: 1.5rem;
+  }
+
+  .herb-overlay.active {
+    display: flex;
+    animation: fadeIn 0.25s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* 🌿 Details Card */
+  .details-page {
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 18px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+    max-width: 900px;
+    width: 95%;
+    position: relative;
+    transform: scale(0.85);
+    opacity: 0;
+    overflow-y: auto;
+    max-height: 90vh;
+    animation: popupShow 0.35s ease forwards;
+  }
+
+  @keyframes popupShow {
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* 🌿 Close Button */
+  .close-btn {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 2rem;
+    color: #166534;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    line-height: 40px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .close-btn:hover {
+    background: #166534;
+    color: #fff;
+    transform: rotate(90deg);
+  }
+
+  /* 🌿 Content Layout */
+  .herb-details {
+    text-align: center;
+  }
+
+  .herb-details img {
+    width: 260px;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 12px;
+    /* square shape with soft edges */
+    margin: 0 auto 1rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    display: block;
+  }
+
+  .herb-details h2 {
+    color: #165802;
+    font-size: 1.7rem;
+    font-weight: 400;
+    margin-bottom: 0.3rem;
+  }
+
+  .herb-details p.scientific-name {
+    color: #15803d;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+    font-weight: 200;
+  }
+
+  /* 🌿 Info Grid Layout */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-top: 1rem;
+    text-align: left;
+  }
+
+  @media (max-width: 700px) {
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* 🌿 Info Section Panels */
+  .info-section {
+    background: #f0fdf4;
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .info-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 200;
+    /* removed boldness */
+    color: #04880f;
+    margin-bottom: 0.5rem;
+    border-bottom: 1.5px solid #a7f3d0;
+    padding-bottom: 0.25rem;
+  }
+
+  .info-section h3 i {
+    color: #10b981;
+    font-size: 1.1rem;
+  }
+
+  .info-section ul {
+    margin-left: 1rem;
+    list-style-type: disc;
+    color: #374151;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    font-weight: 200;
+  }
+
+  .info-section p {
+    color: #374151;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    font-weight: 200;
+  }
+
+  /* 🌿 Location Note */
+  .location-text {
+    margin-top: 1.2rem;
+    padding: 0.8rem 1rem;
+    background: #ecfdf5;
+    border-left: 4px solid #34d399;
+    border-radius: 8px;
+    font-weight: 200;
+    color: #065f46;
+    text-align: left;
+  }
+
+  .section_container {
+    background-color: #f0fdf4;
+    padding: 3rem 1.5rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .content-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .section_header {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #065f46;
+    margin-bottom: 1rem;
+  }
+
+  .section_subtext {
+    font-size: 1.1rem;
+    color: #4b5563;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+  }
+
+  .section_container {
+    background-color: #ecfdf5;
+    padding: 4rem 1.5rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .content-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .section_header {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #065f46;
+    margin-bottom: 1rem;
+  }
+
+  .section_subtext {
+    font-size: 1.05rem;
+    color: #374151;
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+  }
+
+  header {
+    position: sticky;
+    /* Makes the header stick to the top */
+    top: 0;
+    /* Stick at the top of the page */
+    z-index: 999;
+    background-image: linear-gradient(to right,
+        rgba(13, 59, 2, 0.88),
+        rgba(120, 233, 27, 0.6)),
+      url('https://brackenburyclinic.com/wp-content/uploads/2015/12/Herbal-Medicine.jpg');
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background-color: #3a773a;
+    color: white;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  }
+
+  #popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .popup-message {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 20px 40px;
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    opacity: 1;
+    transform: scale(1);
+    transition: all 0.6s ease;
+  }
+
+  .popup-message.error {
+    background-color: #f44336;
+  }
+
+  .popup-message.info {
+    background-color: #2196f3;
+  }
+
+  .popup-message.warning {
+    background-color: #ff9800;
+  }
+
+  .fade-out {
+    opacity: 0 !important;
+    transform: scale(0.7) !important;
+  }
+
+  #map {
+    height: 420px;
+    width: calc(100% - 2rem);
+    margin: 2rem 1rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+    z-index: 4000;
+    /* above background but below overlay */
+  }
+
+  /* About Us Section */
+  .about-us .about-grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    padding: 2rem 0;
+  }
+
+  .about-us .about-text {
+    flex: 1 1 400px;
+  }
+
+  .about-us .about-text .section_header {
+    font-size: clamp(1.8rem, 2.5vw, 2.6rem);
+    font-weight: 800;
+    color: #046804;
+  }
+
+  .about-us .about-text .section_header span {
+    color: #3ed60f;
+  }
+
+  .about-us .about-text .section_subtext {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #374151;
+    margin: 1rem 0;
+  }
+
+  .about-us .about-text .btn {
+    margin-top: 1rem;
+    background: linear-gradient(135deg, #15ac10, #059600);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .about-us .about-text .btn:hover {
+    background: linear-gradient(135deg, #1be425, #08a502);
+  }
+
+  .about-us .about-image {
+    flex: 1 1 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .about-us .about-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.4s ease;
+  }
+
+  .about-us .about-image img:hover {
+    transform: scale(1.05);
+  }
+
+  /* --- Government & Public Health Section Styles --- */
+  #doctors {
+    background-color: #e6f4e6;
+    /* soft green background for distinction */
+    padding: 4rem 1.5rem;
+  }
+
+  #doctors .section_header {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #2b7203;
+    margin-bottom: 1rem;
+  }
+
+  #doctors .section_header span {
+    color: #118306;
+  }
+
+  #doctors .section_subtext {
+    font-size: 1.05rem;
+    color: #374151;
+    margin-bottom: 3rem;
+    line-height: 1.7;
+  }
+
+  #doctors .herbal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.8rem;
+    margin-top: 2rem;
+  }
+
+  #doctors .herb-card {
+    background: #f7fdf7;
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  #doctors .herb-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.18);
+  }
+
+  #doctors .herb-card .image {
+    height: 160px;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #doctors .herb-card .image img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+  }
+
+  #doctors .herb-card:hover .image img {
+    transform: scale(1.15) rotate(-2deg);
+  }
+
+  #doctors .herb-card h4 {
+    color: #107a06;
+    font-size: 1.5rem;
+    margin-bottom: 0.6rem;
+  }
+
+  #doctors .herb-card p {
+    color: #4b5563;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .herb-details div[id^="herbMap_"] {
+    height: 250px;
+    width: 100%;
+    margin-top: 1rem;
+    border-radius: 12px;
+  }
+
+  .herb-details ul.procedure-list {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+  }
+
+  .site-footer {
+  color: #ffffff;
+  padding: 3rem 1.5rem 1.5rem 1.5rem;
+  font-family: 'Poppins', sans-serif;
+    background-image: linear-gradient(to right,
+        rgba(13, 63, 0, 0.88),
+        rgba(30, 90, 22, 0.6)),
+      url('https://brackenburyclinic.com/wp-content/uploads/2015/12/Herbal-Medicine.jpg');
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background-color: #1c7a1c;
+    color: white;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  gap: 2rem;
+}
+
+.footer-section {
+  flex: 1 1 250px;
+}
+
+.footer-section h3 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #50f02f;
+}
+
+.footer-section h4 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: #50f02f;
+}
+
+.footer-section h5 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: #50f02f;
+}
+
+.footer-section p,
+.footer-section li,
+.footer-section a {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #f0fdf4;
+  text-decoration: none;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-section ul li a:hover {
+  color: #4ade80;
+}
+
+.social-icons {
+  margin-top: 1rem;
+}
+
+.social-icons a {
+  display: inline-block;
+  width: 35px;
+  height: 35px;
+  margin-right: 0.5rem;
+  background-color: #118502;
+  color: #fff;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 35px;
+  transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+  background-color: #63de4a;
+  color: #065f46;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #d1fae5;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+}
+  
+
+ .profile-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .profile-card {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #4CAF50;
+    }
+
+    .herbal-list {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .herbal-item {
+      background: #f9f9f9;
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .herbal-item img {
+      width: 80px;
+      height: 80px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .s {
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    .delete-btn {
+      background: #e53935;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .delete-btn:hover {
+      background: #c62828;
+    }
+    /*user*/
+    .button-group {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .profile-icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 2.8rem;
+      color: #ffffff;
+      transition: transform 0.2s ease;
+    }
+
+    .profile-icon-btn:hover {
+      transform: scale(1.1);
+      color: #2e7d32;
+    }
+
+    /* Profile Drawer Styling */
+    .profile-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 400px;
+      background: #ffffff;
+      box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+      padding: 2rem;
+      transform: translateX(100%);
+      transition: transform 0.3s ease-in-out;
+      overflow-y: auto;
+      z-index: 2000;
+    }
+
+    .profile-drawer.visible {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .drawer-header h2 {
+      margin: 0;
+      color: #2e7d32;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      transition: color 0.2s;
+    }
+
+    .close-btn:hover {
+      color: #000;
+    }
+    .profile-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .profile-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #4CAF50;
+    }
+
+    .herbal-list {
+      list-style: none;
+      padding: 0;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .herbal-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f8f8f8;
+      border-radius: 8px;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .herbal-item img {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+.settings {
+      text-align: center;
+      margin-top: 1.5rem;
+      border-top: 1px solid #ddd;
+      padding-top: 1rem;
+    }
+
+    .delete-btn {
+      background: #e53935;
+      color: #fff;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .delete-btn:hover {
+      background: #c62828;
+    }
+    /* Optional overlay background when drawer is open */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      display: none;
+      z-index: 1500;
+    }
+
+    #overlay.visible {
+      display: block;
+    }
+    /* Modern herbal-themed map marker */
+.custom-herb-marker {
+    background-color: hsl(123, 95%, 32%);
+    border: 3px solid #05970a;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: block;
+    box-shadow: 0 0 10px rgba(0, 136, 7, 0.7);
+    position: relative;
+}
+
+.custom-herb-marker:hover {
+    transform: scale(1.2);
+    transition: 0.2s ease-in-out;
+}
+
+/* Subtle pulse animation */
+.custom-herb-marker::after {
+    content: "";
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: pulse 2s infinite;
+    background: rgba(76, 175, 80, 0.4);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: .8;
+    }
+    70% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+/* --- Media Queries for Responsiveness --- */
+
+@media (max-width: 1024px) {
+  /* Header adjustments for smaller screens (e.g., tablets) */
+  header {
+    flex-wrap: wrap; /* Allow wrapping */
+    padding: 1rem;
+    justify-content: center;
+  }
+
+  header .logo-section {
+    width: 100%; /* Full width for logo/title */
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  header h1 {
+    font-size: 2rem; /* Smaller title */
+  }
+
+  header h1 span {
+    font-size: 2rem;
+  }
+
+  .nav_links {
+    width: 100%; /* Full width nav links */
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .button-group {
+    width: 100%;
+    justify-content: center;
+    gap: 1.5rem; /* Adjust gap */
+  }
+
+  /* General layout adjustments */
+  .healing-section {
+    flex-direction: column; /* Stack content vertically */
+    padding: 3rem 1.5rem;
+    text-align: center;
+  }
+
+  .healing-section .image-content {
+    order: -1; /* Move image above text on smaller screens */
+    margin-bottom: 1.5rem;
+  }
+  
+  .healing-section .image-content img {
+    max-width: 80%;
+  }
+
+  .healing-section .section_header {
+    font-size: 2.5rem;
+  }
+
+  .healing-section p {
+    font-size: 1.2rem;
+  }
+
+  .about-us .about-grid {
+    flex-direction: column; /* Stack about content */
+  }
+
+  .about-us .about-image {
+    order: -1; /* Image first */
+  }
+}
+
+@media (max-width: 768px) {
+  /* Header for mobile devices */
+  header {
+    padding: 1rem 0.5rem;
+  }
+
+  header .logo-section {
+    /* Logo and title remain centered, slightly smaller */
+  }
+
+  header img {
+    height: 70px; /* Smaller logo */
+  }
+  
+  header h1, header h1 span {
+    font-size: 1.5rem;
+  }
+
+  .nav_links {
+    flex-wrap: wrap; /* Allow navigation links to wrap */
+    gap: 0.75rem;
+  }
+  
+  .nav_links li a {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  /* Herb Galleries responsiveness */
+  .image-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* 2 columns on most phones */
+  }
+
+  .condition-galleries {
+    padding: 1rem;
+  }
+  
+  .condition-section h3 {
+    font-size: 1.5rem;
+  }
+
+  /* Profile Card responsiveness (for the main dashboard body) */
+  .profile-container {
+    padding: 1rem;
+    margin: 1rem auto;
+  }
+  
+  .profile-card {
+    flex-direction: column; /* Stack profile info */
+    text-align: center;
+    gap: 0.5rem;
+  }
+  
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .herbal-list {
+    grid-template-columns: 1fr; /* Single column list on small screens */
+  }
+
+  /* User Profile Drawer responsiveness */
+  .profile-drawer {
+    width: 100%; /* Full screen width on mobile */
+    max-width: 100%;
+    padding: 1.5rem;
+  }
+}
+/* **NEW STYLE FOR MAP LABEL** */
+.map-label {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1da10b;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  background-color: #f0fdf4;
+  border-radius: 8px;
+  border: 1px solid #d1fae5;
+}
+/* Media Modal Overlay */
+.media-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 10001;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.media-modal-overlay.active {
+  display: flex;
+}
+
+/* Modal Content Container */
+.media-modal-content {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 900px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: scale(0.9);
+  opacity: 0;
+  animation: popupShow 0.4s ease forwards;
+}
+
+/* Close Button */
+.media-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 2rem;
+  color: #166534;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid #166534;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.media-close-btn:hover {
+  background: #166534;
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+/* Modal Header */
+.media-modal-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid #10b981;
+}
+
+.media-modal-header h2 {
+  color: #166534;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  font-weight: 800;
+}
+
+.media-modal-header p {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+/* Media Display Area */
+.media-display {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+}
+
+.media-item {
+  width: 100%;
+  text-align: center;
+}
+
+.media-item h3 {
+  color: #166534;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.media-item h3 i {
+  color: #10b981;
+}
+
+/* Logo Content Wrapper - Side by Side Layout */
+.logo-content-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 2.5rem;
+  align-items: start;
+  text-align: left;
+}
+
+.logo-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: sticky;
+  top: 2rem;
+}
+
+.logo-image-container img {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.logo-image-container img:hover {
+  transform: scale(1.05);
+}
+
+/* Logo Description Styling */
+.logo-description {
+  background: #f0fdf4;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border-left: 4px solid #10b981;
+}
+
+.logo-description h4 {
+  color: #166534;
+  font-size: 1.4rem;
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.logo-description h4 i {
+  color: #10b981;
+}
+
+.description-item {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid #d1fae5;
+}
+
+.description-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.description-item strong {
+  color: #15803d;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.description-item strong i {
+  color: #10b981;
+  font-size: 1rem;
+}
+
+.description-item p {
+  color: #374151;
+  line-height: 1.7;
+  font-size: 0.95rem;
+  margin: 0;
+  padding-left: 1.4rem;
+}
+
+/* Responsive Design for Logo Section */
+@media (max-width: 900px) {
+  .logo-content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .logo-image-container {
+    position: static;
+  }
+
+  .logo-image-container img {
+    max-width: 350px;
+  }
+}
+/* Poster Display */
+.poster-display img {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.poster-display img:hover {
+  transform: scale(1.02);
+}
+
+/* Video Display */
+.video-display {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.video-display iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 15px;
+}
+/* ============================================
+   MOBILE S - 320px
+   ============================================ */
+@media (max-width: 320px) {
+  /* Header adjustments */
+  header {
+    padding: 0.5rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  header img {
+    height: 50px;
+  }
+
+  header h1, header h1 span {
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .nav_links {
+    flex-direction: column;
+    gap: 0.3rem;
+    width: 100%;
+  }
+
+  .nav_links li a {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .btn {
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+    width: 100%;
+  }
+
+  .profile-icon-btn {
+    font-size: 1.8rem;
+  }
+
+  /* Home section */
+  .healing-section {
+    padding: 2rem 1rem;
+    gap: 1rem;
+  }
+
+  .healing-section .section_header {
+    font-size: 1.5rem;
+  }
+
+  .healing-section p {
+    font-size: 0.9rem;
+  }
+
+  .healing-section .image-content img {
+    width: 100%;
+    max-width: 250px;
+  }
+
+  /* Search */
+  .search-container {
+    width: 100%;
+    padding: 4px 8px;
+  }
+
+  .search-input {
+    font-size: 0.85rem;
+    padding: 6px;
+  }
+
+  .search-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+
+  /* Herb cards */
+  .image-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .herb-card {
+    padding: 0.6rem;
+  }
+
+  .herb-card h4 {
+    font-size: 1rem;
+  }
+
+  .herb-card p {
+    font-size: 0.8rem;
+  }
+
+  .herb-card .image {
+    height: 150px;
+  }
+
+  .herb-card .image img {
+    max-width: 120px;
+  }
+
+  .condition-section h3 {
+    font-size: 1.3rem;
+  }
+
+  /* Profile Drawer */
+  .profile-drawer {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .drawer-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .profile-avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .profile-details p {
+    font-size: 0.8rem;
+  }
+
+  /* Herb Overlay */
+  .details-page {
+    padding: 1.5rem 1rem;
+    max-height: 85vh;
+  }
+
+  .herb-details h2 {
+    font-size: 1.3rem;
+  }
+
+  .herb-details img {
+    width: 180px;
+    height: 180px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .info-section {
+    padding: 0.8rem;
+  }
+
+  .info-section h3 {
+    font-size: 0.9rem;
+  }
+
+  .info-section p, .info-section ul {
+    font-size: 0.85rem;
+  }
+
+  /* Footer */
+  .site-footer {
+    padding: 2rem 1rem 1rem 1rem;
+  }
+
+  .footer-section h3,
+  .footer-section h4,
+  .footer-section h5 {
+    font-size: 1.2rem;
+  }
+
+  .footer-section p,
+  .footer-section li,
+  .footer-section a {
+    font-size: 0.85rem;
+  }
+
+  /* Map */
+  #map {
+    height: 250px;
+    margin: 1rem 0.5rem;
+  }
+
+  /* Media Modal */
+  .media-modal-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .logo-content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .media-modal-header h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* ============================================
+   MOBILE M - 375px
+   ============================================ */
+@media (min-width: 321px) and (max-width: 375px) {
+  header img {
+    height: 60px;
+  }
+
+  header h1, header h1 span {
+    font-size: 1.2rem;
+  }
+
+  .nav_links li a {
+    font-size: 0.8rem;
+  }
+
+  .btn {
+    font-size: 0.8rem;
+  }
+
+  .profile-icon-btn {
+    font-size: 2rem;
+  }
+
+  .healing-section .section_header {
+    font-size: 1.7rem;
+  }
+
+  .healing-section p {
+    font-size: 1rem;
+  }
+
+  .healing-section .image-content img {
+    max-width: 280px;
+  }
+
+  .herb-card .image {
+    height: 160px;
+  }
+
+  .herb-card .image img {
+    max-width: 140px;
+  }
+
+  .condition-section h3 {
+    font-size: 1.5rem;
+  }
+
+  .profile-drawer {
+    width: 100%;
+    padding: 1.2rem;
+  }
+
+  .profile-avatar {
+    width: 65px;
+    height: 65px;
+  }
+
+  .herb-details img {
+    width: 200px;
+    height: 200px;
+  }
+
+  #map {
+    height: 280px;
+  }
+}
+
+/* ============================================
+   MOBILE L - 425px
+   ============================================ */
+@media (min-width: 376px) and (max-width: 425px) {
+  header img {
+    height: 70px;
+  }
+
+  header h1, header h1 span {
+    font-size: 1.4rem;
+  }
+
+  .nav_links li a {
+    font-size: 0.85rem;
+  }
+
+  .btn {
+    font-size: 0.85rem;
+  }
+
+  .profile-icon-btn {
+    font-size: 2.2rem;
+  }
+
+  .healing-section .section_header {
+    font-size: 1.9rem;
+  }
+
+  .healing-section p {
+    font-size: 1.1rem;
+  }
+
+  .healing-section .image-content img {
+    max-width: 300px;
+  }
+
+  .image-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+
+  .herb-card .image {
+    height: 170px;
+  }
+
+  .herb-card .image img {
+    max-width: 150px;
+  }
+
+  .condition-section h3 {
+    font-size: 1.7rem;
+  }
+
+  .profile-drawer {
+    width: 100%;
+    padding: 1.5rem;
+  }
+
+  .profile-avatar {
+    width: 70px;
+    height: 70px;
+  }
+
+  .herb-details img {
+    width: 220px;
+    height: 220px;
+  }
+
+  #map {
+    height: 300px;
+  }
+
+  .logo-content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* ============================================
+   TABLET - 768px
+   ============================================ */
+@media (min-width: 426px) and (max-width: 768px) {
+  header {
+    flex-wrap: wrap;
+    padding: 0.8rem 1rem;
+  }
+
+  header img {
+    height: 80px;
+  }
+
+  header h1, header h1 span {
+    font-size: 1.6rem;
+  }
+
+  .nav_links {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .nav_links li a {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.7rem;
+  }
+
+  .button-group {
+    width: 100%;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .profile-icon-btn {
+    font-size: 2.4rem;
+  }
+
+  .healing-section {
+    padding: 3rem 2rem;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .healing-section .image-content {
+    order: -1;
+  }
+
+  .healing-section .section_header {
+    font-size: 2.2rem;
+  }
+
+  .healing-section p {
+    font-size: 1.3rem;
+  }
+
+  .healing-section .image-content img {
+    max-width: 400px;
+  }
+
+  .search-container {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .image-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .herb-card .image {
+    height: 180px;
+  }
+
+  .herb-card .image img {
+    max-width: 160px;
+  }
+
+  .condition-section h3 {
+    font-size: 2rem;
+  }
+
+  .profile-drawer {
+    width: 380px;
+    padding: 1.8rem;
+  }
+
+  .profile-avatar {
+    width: 75px;
+    height: 75px;
+  }
+
+  .herb-details img {
+    width: 240px;
+    height: 240px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  #map {
+    height: 350px;
+  }
+
+  .about-us .about-grid {
+    flex-direction: column;
+  }
+
+  .about-us .about-image {
+    order: -1;
+  }
+
+  .logo-content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .logo-image-container img {
+    max-width: 300px;
+  }
+
+  #doctors .herbal-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* ============================================
+   LAPTOP - 1024px
+   ============================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+  header {
+    padding: 1rem 1.5rem;
+  }
+
+  header img {
+    height: 100px;
+  }
+
+  header h1, header h1 span {
+    font-size: 2rem;
+  }
+
+  .nav_links {
+    gap: 0.8rem;
+  }
+
+  .nav_links li a {
+    font-size: 0.95rem;
+  }
+
+  .profile-icon-btn {
+    font-size: 2.6rem;
+  }
+
+  .healing-section {
+    padding: 4rem 2.5rem;
+    gap: 2rem;
+  }
+
+  .healing-section .section_header {
+    font-size: 2.8rem;
+  }
+
+  .healing-section p {
+    font-size: 1.4rem;
+  }
+
+  .healing-section .image-content img {
+    width: 500px;
+  }
+
+  .search-container {
+    width: 380px;
+  }
+
+  .image-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+  }
+
+  .herb-card .image {
+    height: 190px;
+  }
+
+  .herb-card .image img {
+    max-width: 170px;
+  }
+
+  .condition-section h3 {
+    font-size: 2.2rem;
+  }
+
+  .profile-drawer {
+    width: 400px;
+    padding: 2rem;
+  }
+
+  .herb-details img {
+    width: 250px;
+    height: 250px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1rem;
+  }
+
+  #map {
+    height: 380px;
+  }
+
+  .logo-content-wrapper {
+    grid-template-columns: 1fr 1.5fr;
+    gap: 2rem;
+  }
+
+  #doctors .herbal-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6rem;
+  }
+}
+
+/* ============================================
+   ADDITIONAL RESPONSIVE FIXES
+   ============================================ */
+@media (max-width: 768px) {
+  /* Ensure all sections stack properly */
+  .section_container {
+    padding: 2rem 1rem;
+  }
+
+  .content-wrapper {
+    padding: 0 1rem;
+  }
+
+  .section_header {
+    font-size: 1.8rem;
+  }
+
+  .section_subtext {
+    font-size: 0.95rem;
+  }
+
+  /* Make sure herb overlay is readable */
+  .details-page {
+    width: 95%;
+    max-width: 100%;
+  }
+
+  .close-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 1.5rem;
+  }
+
+  /* Footer responsive */
+  .footer-container {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .social-icons a {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+  }
+}
+
+/* ============================================
+   CRITICAL FOOTER & BODY FIXES
+   ============================================ */
+
+/* Ensure body doesn't overflow */
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Fix main container */
+main {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Footer base fixes */
+.site-footer {
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.footer-container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.footer-section {
+  min-width: 0; /* Prevent flex items from overflowing */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Mobile S - 320px Footer */
+@media (max-width: 320px) {
+  .site-footer {
+    padding: 2rem 0.5rem 1rem 0.5rem;
+  }
+
+  .footer-container {
+    padding: 0 0.5rem;
+    gap: 1.5rem;
+  }
+
+  .footer-section {
+    flex: 1 1 100%;
+    padding: 0;
+  }
+
+  .footer-section.about p {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    margin: 0.3rem 0;
+  }
+
+  .footer-section h3,
+  .footer-section h4,
+  .footer-section h5 {
+    font-size: 1.1rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .footer-section ul li {
+    margin-bottom: 0.4rem;
+  }
+
+  .footer-section p,
+  .footer-section li,
+  .footer-section a {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .social-icons {
+    margin-top: 0.8rem;
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .social-icons a {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 0.85rem;
+  }
+
+  .footer-bottom {
+    font-size: 0.75rem;
+    padding-top: 0.8rem;
+    margin-top: 1.5rem;
+  }
+
+  /* Fix condition galleries */
+  .condition-galleries {
+    padding: 1rem 0.5rem;
+    margin: 0;
+    width: 100%;
+  }
+
+  .condition-galleries h1,
+  .condition-galleries h2 {
+    margin-right: 0;
+    padding: 0 0.5rem;
+  }
+}
+
+/* Mobile M - 375px Footer */
+@media (min-width: 321px) and (max-width: 375px) {
+  .site-footer {
+    padding: 2.5rem 0.8rem 1rem 0.8rem;
+  }
+
+  .footer-container {
+    padding: 0 0.8rem;
+    gap: 1.5rem;
+  }
+
+  .footer-section {
+    flex: 1 1 100%;
+  }
+
+  .footer-section h3,
+  .footer-section h4,
+  .footer-section h5 {
+    font-size: 1.3rem;
+  }
+
+  .footer-section p,
+  .footer-section li,
+  .footer-section a {
+    font-size: 0.85rem;
+  }
+
+  .social-icons a {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+  }
+
+  .footer-bottom {
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile L - 425px Footer */
+@media (min-width: 376px) and (max-width: 425px) {
+  .site-footer {
+    padding: 2.5rem 1rem 1rem 1rem;
+  }
+
+  .footer-container {
+    padding: 0 1rem;
+    gap: 1.8rem;
+  }
+
+  .footer-section {
+    flex: 1 1 100%;
+  }
+
+  .footer-section h3,
+  .footer-section h4,
+  .footer-section h5 {
+    font-size: 1.4rem;
+  }
+
+  .footer-section p,
+  .footer-section li,
+  .footer-section a {
+    font-size: 0.9rem;
+  }
+
+  .social-icons a {
+    width: 33px;
+    height: 33px;
+    line-height: 33px;
+  }
+
+  .footer-bottom {
+    font-size: 0.85rem;
+  }
+}
+
+/* Tablet - 768px Footer */
+@media (min-width: 426px) and (max-width: 768px) {
+  .site-footer {
+    padding: 3rem 1.5rem 1.5rem 1.5rem;
+  }
+
+  .footer-container {
+    padding: 0 1.5rem;
+    gap: 2rem;
+  }
+
+  .footer-section {
+    flex: 1 1 100%;
+  }
+
+  .footer-section h3 {
+    font-size: 1.8rem;
+  }
+
+  .footer-section h4,
+  .footer-section h5 {
+    font-size: 1.3rem;
+  }
+
+  .footer-section p,
+  .footer-section li,
+  .footer-section a {
+    font-size: 0.95rem;
+  }
+
+  .social-icons a {
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+  }
+
+  .footer-bottom {
+    font-size: 0.88rem;
+  }
+}
+
+/* Laptop - 1024px Footer */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .site-footer {
+    padding: 3rem 2rem 1.5rem 2rem;
+  }
+
+  .footer-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 0 2rem;
+    gap: 2.5rem;
+  }
+
+  .footer-section {
+    flex: 1 1 calc(50% - 1.25rem);
+    min-width: 250px;
+  }
+
+  .footer-section.about {
+    flex: 1 1 100%;
+  }
+
+  .footer-section h3 {
+    font-size: 1.9rem;
+  }
+
+  .footer-section h4,
+  .footer-section h5 {
+    font-size: 1.35rem;
+  }
+
+  .footer-section p,
+  .footer-section li,
+  .footer-section a {
+    font-size: 0.98rem;
+  }
+
+  .social-icons a {
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+  }
+
+  .footer-bottom {
+    font-size: 0.9rem;
+  }
+}
+
+/* Large Desktop - 1440px and above Footer */
+@media (min-width: 1025px) {
+  .site-footer {
+    padding: 3rem 2rem 1.5rem 2rem;
+  }
+
+  .footer-container {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .footer-section {
+    flex: 1 1 auto;
+    max-width: 350px;
+  }
+
+  .footer-section.about {
+    flex: 1.5 1 auto;
+  }
+}
+
+/* Landscape orientation for mobile devices */
+@media (max-height: 500px) and (orientation: landscape) {
+  .healing-section {
+    padding: 2rem 1.5rem;
+  }
+
+  .healing-section .section_header {
+    font-size: 1.5rem;
+  }
+
+  .healing-section .image-content img {
+    max-width: 250px;
+  }
+
+  .herb-overlay {
+    padding: 0.5rem;
+  }
+
+  .details-page {
+    max-height: 95vh;
+  }
+}
+
+/* ============================================
+   CRITICAL BODY & CONTAINER WIDTH FIXES
+   ============================================ */
+
+/* Global container fixes */
+html {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure all containers respect viewport width */
+* {
+  max-width: 100%;
+}
+
+/* Header full width fixes */
+header {
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+.nav_container {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Home section fixes */
+#home {
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+.healing-section {
+  width: 100%;
+  max-width: var(--max-width);
+  box-sizing: border-box;
+}
+
+/* Main content area */
+main {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Condition galleries container */
+.condition-galleries {
+  width: 100%;
+  max-width: var(--max-width);
+  box-sizing: border-box;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Section containers */
+.section_container {
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.content-wrapper {
+  width: 100%;
+  max-width: var(--max-width);
+  box-sizing: border-box;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Image grid responsiveness */
+.image-grid {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Herb cards don't overflow */
+.herb-card {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Search container fixes */
+.search-row {
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 0;
+}
+
+.search-container {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* About section fixes */
+.about-us .about-grid {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Government section fixes */
+#doctors {
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+#doctors .herbal-grid {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Profile drawer fixes */
+.profile-drawer {
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+/* Mobile specific body fixes */
+@media (max-width: 425px) {
+  body {
+    font-size: 14px;
+  }
+
+  .condition-galleries {
+    padding: 1rem 0.5rem;
+    margin: 0;
+  }
+
+  .condition-galleries h1 {
+    margin-right: 0;
+    padding-right: 0;
+  }
+
+  .content-wrapper {
+    padding: 0 0.5rem;
+  }
+
+  .healing-section {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Fix any images that might overflow */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Ensure search doesn't overflow */
+  .search-row {
+    padding: 0 0.5rem;
+  }
+
+  /* Footer specific mobile fixes */
+  .site-footer {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .footer-container {
+    width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  .footer-section.about p {
+    word-break: break-word;
+  }
+
+  .footer-section.contact p {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Tablet specific body fixes */
+@media (min-width: 426px) and (max-width: 768px) {
+  .condition-galleries {
+    padding: 2rem 1rem;
+  }
+
+  .content-wrapper {
+    padding: 0 1rem;
+  }
+
+  .healing-section {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* Laptop specific body fixes */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .condition-galleries {
+    padding: 2rem 1.5rem;
+  }
+
+  .content-wrapper {
+    padding: 0 1.5rem;
+  }
+
+  .healing-section {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .footer-container {
+    padding: 0 1.5rem;
+  }
+}
+</style>
+
+<body>
+  <header>
+    <div class="logo-section">
+      <img src="{% static 'base/assets/logoHerbMed.png' %}" alt="HerbMed Logo" />
+      <h1>HERBMED | <span>HERBAL MEDICINE</span></h1>
+    </div>
+
+    <ul class="nav_links" id="mainNav">
+      <li><a href="#home" data-target="home">Home</a></li>
+      <li><a href="#publichealth" data-target="publichealth" >Government and Public Health</a></li>
+      <li><a href="#about" data-target="about">About Us</a></li>
+    </ul>
+
+     <div class="button-group">
+      <!-- Profile Icon -->
+      <button id="profileToggle" class="profile-icon-btn" title="User Profile">
+        <i class="fa-solid fa-user-circle"></i>
+      </button>
+
+    <div class="button-group">
+      <a href="{% url 'logout_view' %}" class="btn"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </header>
+
+  <!-- Slide-in Profile Panel -->
+  <div id="userProfile" class="profile-drawer hidden">
+    <div class="drawer-header">
+      <h2>User Profile</h2>
+      <button id="closeProfile" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <section class="user-info">
+      <div class="profile-card">
+        <img src="{% static 'base/assets/avatar.png' %}" alt="User Avatar" class="profile-avatar" />
+        <div class="profile-details">
+          <p><strong>Email:</strong> {{ user.email }}</p>
+          <p><strong>Username:</strong> {{ user.username }}</p>
+          <p><strong>Member Since:</strong> {{ user.date_joined|date:"F j, Y" }}</p>
+        </div>
+      </div>
+    </section>
+
+     <section class="settings">
+      <h3>Account Settings</h3>
+      <form action="{% url 'delete_account' %}" method="post" onsubmit="return confirm('Are you sure you want to permanently delete your account?');">
+        {% csrf_token %}
+        <button type="submit" class="delete-btn">
+          <i class="fa-solid fa-trash"></i> Delete My Account
+        </button>
+      </form>
+    </section>
+  </div>
+
+   <div id="overlay"></div>
+
+  <script>
+    // Profile toggle script
+    const profileToggle = document.getElementById('profileToggle');
+    const userProfile = document.getElementById('userProfile');
+    const closeProfile = document.getElementById('closeProfile');
+    const overlay = document.getElementById('overlay');
+
+    profileToggle.addEventListener('click', () => {
+      userProfile.classList.add('visible');
+      overlay.classList.add('visible');
+    });
+
+    // Close drawer
+    closeProfile.addEventListener('click', () => {
+      userProfile.classList.remove('visible');
+      overlay.classList.remove('visible');
+    });
+
+    
+    // Close when clicking outside
+    overlay.addEventListener('click', () => {
+      userProfile.classList.remove('visible');
+      overlay.classList.remove('visible');
+    });
+  </script>
+
+  {% if messages %}
+  <div id="popup-overlay">
+    {% for message in messages %}
+    <div class="popup-message {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+
+  <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+  const navLinks = document.querySelectorAll("#mainNav a");
+  const sections = Array.from(navLinks).map(link => document.getElementById(link.dataset.target));
+
+  // Click smooth scroll
+  navLinks.forEach(link => {
+    link.addEventListener("click", function(e) {
+      const targetId = this.dataset.target;
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        e.preventDefault();
+        targetSection.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  });
+
+  // Intersection Observer to highlight nav link on scroll
+  const observerOptions = {
+    root: null,          // viewport
+    rootMargin: "-50% 0px -50% 0px", // trigger when section is roughly in middle
+    threshold: 0
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Remove active from all links
+        navLinks.forEach(link => link.classList.remove("active"));
+
+        // Add active to the corresponding link
+        const id = entry.target.id;
+        const activeLink = document.querySelector(`#mainNav a[data-target="${id}"]`);
+        if (activeLink) activeLink.classList.add("active");
+      }
+    });
+  }, observerOptions);
+
+  // Observe each section
+  sections.forEach(section => {
+    if (section) observer.observe(section);
+  });
+});
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const overlay = document.getElementById('popup-overlay');
+      const mainContent = document.querySelector('body');
+      if (overlay) {
+        mainContent.classList.add('blurred');
+        setTimeout(() => {
+          const popups = overlay.querySelectorAll('.popup-message');
+          popups.forEach(popup => popup.classList.add('fade-out'));
+          setTimeout(() => {
+            overlay.remove();
+            mainContent.classList.remove('blurred');
+          }, 600);
+        }, 2000);
+      }
+    });
+  </script>
+  {% endif %}
+
+  <main>
+    <section id="home" class="section_container">
+      <section class="healing-section">
+        <div class="text-content">
+          <h2 class="section_header">EXPLORE THE HEALING POWER OF <span>HERBMED</span></h2>
+          <p>Unlock nature’s secret remedies for a healthier, balanced lifestyle.
+            Discover the science of herbs and the wisdom of tradition in every drop.
+            Natural • Pure • Effective</p>
+        </div>
+        <div class="image-content">
+          <img src="{% static 'base/assets/Herbal-Products-removebg-preview.png' %}" alt="Herbal Healing 3D" />
+        </div>
+      </section>
+
+      <div id="mainPage" class="condition-galleries">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h2></h2>
+          <div class="search-row">
+            <div class="search-container" title="Search herbs">
+              <input id="herbSearch" class="search-input" placeholder="Enter herbal name (e.g., ginger)"
+                aria-label="Search herbs">
+              <button class="search-btn" id="searchBtn" aria-label="Search">🔍</button>
+            </div>
+          </div>
+        </div>
+
+        <section id="herbs">
+          {% for condition_key, group in grouped_herbs.items %}
+          <div class="condition-section" data-condition="{{ condition_key }}">
+            <h3>{{ group.display_name }}</h3>
+            <div class="image-grid">
+              {% for herb in group.herbs %}
+              <div class="herb-card" data-key="{{ herb.name|slugify }}">
+                <div class="image">
+                  {% if herb.image %}
+                  <img src="{{ herb.image.url }}" alt="{{ herb.name }}">
+                  {% else %}
+                  <img src="{% static 'base/assets/no-image.png' %}" alt="No image">
+                  {% endif %}
+                </div>
+                <h4>{{ herb.name }}</h4>
+                <p>{{ herb.benefits }}</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </section>
+  </main>
+
+  <div class="herb-overlay" id="herbOverlay">
+    <div class="details-page herb-details" id="herbDetails">
+      <span class="close-btn" id="closeOverlay">&times;</span>
+      <div id="herbDetailsContent"></div>
+    </div>
+  </div>
+</div>
+    <!-- Scripts -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script>
+    //  const herbPin = L.divIcon({
+    //     className: "",
+    //     html: `<span class="custom-herb-marker"></span>`,
+    //     iconSize: [26, 26],
+    //     iconAnchor: [13, 13],
+    // });
+
+    // Image preview
+    function previewImage(event) {
+        const image = document.getElementById('preview');
+        image.src = URL.createObjectURL(event.target.files[0]);
+        image.style.display = 'block';
+    }
+
+    // Initialize map
+    const addMap = L.map('add-map').setView([11.5908, 124.4836], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(addMap);
+
+    
+
+    let locations = [];
+
+    // Store all markers
+    let markers = [];
+
+   addMap.on('click', function(e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+
+        if (data.locations && data.locations.length) {
+        data.locations.forEach(loc => {
+            L.marker([loc.lat, loc.lng], { icon: herbPin }).addTo(herbMap);
+        });
+
+        // Optionally, fit map bounds
+        const bounds = L.latLngBounds(data.locations.map(l => [l.lat, l.lng]));
+        herbMap.fitBounds(bounds, { padding: [50, 50] });
+    }
+
+        // Add marker
+        L.marker([lat, lng], { icon: herbPin }).addTo(addMap);
+
+        // Add to list
+        locations.push({lat: lat, lng: lng});
+
+        // Show on screen
+        document.getElementById("coordinateDisplay").style.display = "block";
+        document.getElementById("coordText").textContent = 
+            locations.map(l => `${l.lat.toFixed(5)}, ${l.lng.toFixed(5)}`).join(" | ");
+
+        // Store JSON for backend
+        document.getElementById("location_list").value = JSON.stringify(locations);
+    });
+</script>
+  <script>
+    const herbs = {
+   {% for condition_key, group in grouped_herbs.items %}
+    {% for herb in group.herbs %}
+    "{{ herb.name|slugify }}": {
+      key: "{{ herb.name|slugify }}",
+        name: "{{ herb.name }}",
+        scientific_name: "{{ herb.scientific_name|default:'' }}",
+        img: "{% if herb.image %}{{ herb.image.url }}{% else %}{% static 'base/assets/no-image.png' %}{% endif %}",
+        benefits: ["{{ herb.benefits|escapejs }}"],
+        prescription: "{{ herb.prescription|escapejs }}",
+        advice: "{{ herb.advice|escapejs }}",
+        procedure: "{{ herb.procedure|escapejs }}".split(','),
+        locations: {{ herb.locations|safe }},
+    },
+    {% endfor %}
+    {% endfor %}
+};
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const herbCards = document.querySelectorAll('.herb-card');
+      const overlay = document.getElementById('herbOverlay');
+      const detailsContainer = document.getElementById('herbDetailsContent');
+      const closeBtn = document.getElementById('closeOverlay');
+      const searchInput = document.getElementById('herbSearch');
+      const searchBtn = document.getElementById('searchBtn');
+
+      function openHerbOverlayByKey(key) {
+        const data = herbs[key];
+        if (!data) return;
+
+        const mapId = `herbMap_${key}`; // unique map ID for each herb
+
+        // Build overlay content
+        detailsContainer.innerHTML = `
+      <div class="grid">
+        <div>
+          <img src="${data.img}" alt="${data.name}">
+          <h2>${data.name}</h2>
+          ${data.scientific_name ? `<p class="scientific-name"><strong>Scientific Name:</strong> <em>${data.scientific_name}</em></p>` : ''}
+        </div>
+        <div>
+          <div class="info-grid">
+            <div class="info-section">
+              <h3><i class="fa-solid fa-leaf"></i> Benefits</h3>
+              <ul>${data.benefits.map(b => `<li>${b}</li>`).join('')}</ul>
+            </div>
+            <div class="info-section">
+              <h3><i class="fa-solid fa-flask"></i> Procedure</h3>
+              <ul>${data.procedure.map(p => `<li>${p}</li>`).join('')}</ul>
+            </div>
+          </div>
+
+          <div class="info-grid">
+            <div class="info-section">
+              <h3><i class="fa-solid fa-user-md"></i> Professional Advice</h3>
+              <ul>${data.advice.split('.').filter(x => x.trim() !== '').map(a => `<li>${a.trim()}</li>`).join('')}</ul>
+            </div>
+            <div class="info-section">
+              <h3><i class="fa-solid fa-prescription-bottle-medical"></i> Prescription</h3>
+              <ul>${data.prescription.split('.').filter(x => x.trim() !== '').map(p => `<li>${p.trim()}</li>`).join('')}</ul>
+            </div>
+          </div>
+
+         ${data.location ? `<div class="location-text"><i class="fa-solid fa-location-dot"></i> ${data.location}</div>` : ''}
+          ${data.locations && data.locations.length > 0 ? `<h4 class="map-label">Herb Location Map</h4>` : ''}
+            ${data.locations && data.locations.length > 0 ? `<div id="${mapId}" style="height:250px; width:100%; margin-top:1rem; border-radius:12px;"></div>` : ''}
+        </div>
+      </div>
+    `;
+
+        overlay.classList.add('active');
+
+        // Initialize map after container renders
+      // Initialize map after container renders
+        if (data.locations && data.locations.length > 0) {
+
+    setTimeout(() => {
+        const mapIdElement = document.getElementById(mapId);
+        if (!mapIdElement) return;
+
+        const herbMap = L.map(mapId, {
+            zoomControl: true
+        });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(herbMap);
+
+            const herbPin = L.divIcon({
+            className: "", // needed! or Leaflet injects default "leaflet-div-icon"
+            html: `<span class="custom-herb-marker"></span>`,
+            // iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+            // iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41]
+        });
+
+        // Add all markers
+        data.locations.forEach(loc => {
+            L.marker([loc.lat, loc.lng], { icon: herbPin })
+             .addTo(herbMap)
+             .bindPopup(`<strong>${data.name}</strong>`);
+        });
+
+        // Fit map bounds to markers
+        const bounds = L.latLngBounds(data.locations.map(l => [l.lat, l.lng]));
+        herbMap.fitBounds(bounds, { padding: [50, 50] });
+
+
+            herbMap.invalidateSize();
+          }, 50);
+        }
+      }
+
+      // Open overlay on card click
+      herbCards.forEach(card => {
+        card.addEventListener('click', () => openHerbOverlayByKey(card.dataset.key));
+      });
+      // Close overlay
+      closeBtn.addEventListener('click', () => overlay.classList.remove('active'));
+      overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); });
+
+      // Search functionality
+      function filterHerbs() {
+        const query = searchInput.value.toLowerCase();
+        herbCards.forEach(card => {
+          const name = card.dataset.key.toLowerCase();
+          card.style.display = name.includes(query) ? '' : 'none';
+        });
+      }
+
+      searchInput.addEventListener('input', filterHerbs);
+      searchBtn.addEventListener('click', filterHerbs);
+    });
+  </script>
+
+  <!-- Government and Public Health Section -->
+  <section id="publichealth" class="section_container">
+    <div class="content-wrapper">
+      <h2 class="section_header">Government & <span>Public Health</span></h2>
+      <p class="section_subtext">
+        Promoting wellness through nature-inspired initiatives. Discover government programs and public health services
+        that integrate herbal medicine, prevention strategies, and community care.
+      </p>
+
+      <div class="herbal-grid">
+        <!-- Example Card 1 -->
+        <div class="herb-card">
+          <div class="image">
+            <img src="{% static 'base/assets/dohlogo.png' %}" alt="Community Health">
+          </div>
+          <h4>Department Of Health</h4>
+          <p>The Department of Health (DOH) is mandated to develop national plans, technical standards, and guidelines on health and serve as the regulator of all health services and products.</p>
+        </div>
+
+        <!-- Example Card 2 -->
+        <div class="herb-card">
+          <div class="image">
+            <img src="{% static 'base/assets/whologo.png' %}" alt="Natural Remedies Program">
+          </div>
+          <h4>World Health Organazation</h4>
+          <p>The World Health Organization is a specialized agency of the United Nations which coordinates responses to international public health issues and emergencies.</p>
+        </div>
+
+        <!-- Example Card 3 -->
+        <div class="herb-card">
+          <div class="image">
+            <img src="{% static 'base/assets/denrlogo.png' %}" alt="Herbal Education">
+          </div>
+          <h4>Department of Natural Resources</h4>
+          <p>The Department of Environment and Natural Resources is the executive department of the Philippine government responsible for the conservation, management, development, and proper use of the country’s environment in natural resources</p>
+        </div>
+  </section>
+
+  <!-- About Us Section -->
+  <section id="about" class="section_container">
+    <div class="content-wrapper about-us">
+      <div class="about-grid">
+        <div class="about-text">
+          <h2 class="section_header">About <span>HERBMED</span></h2>
+          <p class="section_subtext">
+            At HerbMed, we harness the healing power of nature to create safe and effective herbal remedies.
+            Our mission is to restore balance and wellness using time-tested herbal knowledge combined with modern
+            science.
+          </p>
+          <p class="section_subtext">
+            Every herb is carefully sourced and crafted to ensure maximum benefit. From boosting immunity to soothing
+            ailments,
+            our natural solutions empower you to live healthier, naturally.
+          </p>
+          <a href="#herbs" class="btn">Learn More</a>
+        </div>
+        <div class="about-image">
+          <img src="{% static 'base/assets/herbs_292843331-removebg-preview.png' %}" alt="Herbal Medicine Illustration">
+        </div>
+      </div>
+    </div>
+  </section>
+
+ <footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-section about">
+      <h3>HERBMED | HERBAL MEDICINE</h3>
+      <p>Empowering health with the natural healing power of herbs.</p>
+      <p>Discover safe, effective, and science-backed herbal</p>
+      <p> remedies for everyday wellness.</p>
+    </div></p>
+    </div>
+
+  <div class="footer-section links">
+  <h4>Quick Links</h4>
+  <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#publichealth">Government & Public Health</a></li>
+    <li><a href="#about">About Us</a></li>
+    <li><a href="#herbs">Herbs</a></li>
+    <li><a href="#" id="herbmedLogoLink">HerbMed Logo</a></li>
+    <li><a href="#" id="herbmedPosterLink">HerbMed Poster</a></li>
+    <li><a href="#" id="herbmedVideoLink">HerbMed Video</a></li>
+  </ul>
+</div>
+
+ <!-- Media Modal Overlay -->
+<div class="media-modal-overlay" id="mediaModalOverlay">
+  <div class="media-modal-content">
+    <button class="media-close-btn" id="closeMediaModal">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="media-modal-header">
+      <h2>HerbMed Resources</h2>
+      <p>Explore our logo, poster, and promotional video</p>
+    </div>
+
+   <!-- Logo Section -->
+<div class="media-item logo-display" id="logoSection">
+  <h3><i class="fa-solid fa-image"></i> Official Logo</h3>
+  <div class="logo-content-wrapper">
+    <div class="logo-image-container">
+      <img id="logoImage" src="{% static 'base/assets/logoHerbMed.png' %}" alt="HerbMed Logo">
+    </div>
+    <div class="logo-description">
+      <h4><i class="fa-solid fa-circle-info"></i> Logo Description</h4>
+      <div class="description-item">
+        <strong><i class="fa-solid fa-leaf"></i> Leaves:</strong>
+        <p>It symbolizes growth and restoration, just as plants grow new leaves after being damaged, we can also recover strength and health after illness. Leaves are more than just a symbol; they are often the actual source of healing, giving the body what it needs to recover.</p>
+      </div>
+      <div class="description-item">
+        <strong><i class="fa-solid fa-mug-hot"></i> Cup (with green tea):</strong>
+        <p>It represents something that holds and provides comfort that supports recovery. It reflects the idea of taking in nature's healing power or the act of receiving nature's healing power. The cup with green tea is more than just a symbol; it represents the harmony between nature and the communities.</p>
+      </div>
+      <div class="description-item">
+        <strong><i class="fa-solid fa-circle"></i> Green Circle:</strong>
+        <p>It represents the healing process, which symbolizes the purpose of herbal medicine: to restore well-being naturally. Just as we regain strength throughout the cycle, it reminds us that healing is part of a continuous process, that recovery takes time and care, and that life goes on.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <!-- Poster Section -->
+      <div class="media-item poster-display" id="posterSection">
+        <h3><i class="fa-solid fa-film"></i> Application Poster</h3>
+        <img id="posterImage" src="{% static 'base/assets/poster.png' %}" alt="HerbMed Poster">
+      </div>
+
+      <!-- Video Section -->
+      <div class="media-item" id="videoSection">
+        <h3><i class="fa-brands fa-youtube"></i> Promotional Video</h3>
+        <div class="video-display">
+          <iframe 
+            id="youtubeVideo"
+            src="https://www.youtube.com/embed/Kg8e7nnFhmQ"
+            title="HerbMed Promotional Video" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  // Media Modal Functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const mediaModalOverlay = document.getElementById('mediaModalOverlay');
+    const closeMediaModal = document.getElementById('closeMediaModal');
+
+    // Function to open specific media type
+    window.openMediaModal = function(type = 'all') {
+      document.getElementById('logoSection').style.display = 
+        (type === 'all' || type === 'logo') ? 'block' : 'none';
+      document.getElementById('posterSection').style.display = 
+        (type === 'all' || type === 'poster') ? 'block' : 'none';
+      document.getElementById('videoSection').style.display = 
+        (type === 'all' || type === 'video') ? 'block' : 'none';
+      
+      mediaModalOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    };
+
+    // Close modal
+    function closeModal() {
+      mediaModalOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+      const iframe = document.getElementById('youtubeVideo');
+      iframe.src = iframe.src;
+    }
+
+    closeMediaModal.addEventListener('click', closeModal);
+    mediaModalOverlay.addEventListener('click', function(e) {
+      if (e.target === mediaModalOverlay) closeModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && mediaModalOverlay.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    // Attach event listeners to footer links
+    document.getElementById('herbmedLogoLink').addEventListener('click', function(e) {
+      e.preventDefault();
+      openMediaModal('logo');
+    });
+
+    document.getElementById('herbmedPosterLink').addEventListener('click', function(e) {
+      e.preventDefault();
+      openMediaModal('poster');
+    });
+
+    document.getElementById('herbmedVideoLink').addEventListener('click', function(e) {
+      e.preventDefault();
+      openMediaModal('video');
+    });
+  });
+</script>
+
+    <div class="footer-section contact">
+      <h5>Contact Us</h5>
+      <p><i class="fa-solid fa-location-dot"></i> Zone 1 Masagaosao, Kawayan, Biliran Province</p>
+      <p><i class="fa-solid fa-phone"></i> +63 965 376 4660</p>
+      <p><i class="fa-solid fa-envelope"></i> info@herbmed.com</p>
+      <div class="social-icons">
+        <a href="#" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; {{ now.year }} HerbMed. All Rights Reserved.
+  </div>
+</footer>
+</body>
+</html>

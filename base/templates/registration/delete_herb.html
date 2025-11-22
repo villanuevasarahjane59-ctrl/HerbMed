@@ -1,0 +1,81 @@
+{% block content %}
+<style>
+  /* Container styling */
+  .container {
+    max-width: 500px;
+    margin: 5rem auto;
+    padding: 2rem;
+    background-color: #f0fdf4; /* soft herbal green background */
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    color: #065f46;
+  }
+
+  /* Heading */
+  .container h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #16a34a;
+  }
+
+  /* Paragraph */
+  .container p {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+    color: #374151;
+  }
+
+  /* Buttons */
+  .container form button,
+  .container form a {
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    margin: 0.3rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  /* Delete button */
+  .container form button {
+    border: none;
+    background-color: #dc2626; /* red for delete */
+    color: #fff;
+  }
+
+  .container form button:hover {
+    background-color: #b91c1c;
+    transform: scale(1.05);
+  }
+
+  /* Cancel button */
+  .container form a {
+    background-color: #f0fdf4;
+    border: 2px solid #16a34a;
+    color: #16a34a;
+  }
+
+  .container form a:hover {
+    background-color: #16a34a;
+    color: #fff;
+    transform: scale(1.05);
+  }
+</style>
+
+<div class="container">
+    <h2>Delete Herb - {{ herb.name }}</h2>
+    <p>Are you sure you want to delete this herb? This action cannot be undone.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit">Yes, Delete</button>
+        <a href="{% url 'adminpanel' %}">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.db.models import JSONField
+
+class CustomUser(AbstractUser):
+    fullname = models.CharField(max_length=255)
+    email = models.EmailField(unique=True)
+
+    REQUIRED_FIELDS = ['email', 'fullname']
+
+    def __str__(self):
+        return self.username
+
+
+# 🌿 New Model for Herbs
+class Herb(models.Model):
+    CONDITION_CHOICES = [
+        ('cough', 'Cough'),
+        ('cold', 'Cold & Flu'),
+        ('fever', 'Fever'),
+        ('skin', 'Skin Allergy'),
+        ('wound', 'Wound Care'),
+    ]
+
+    name = models.CharField(max_length=255)
+    scientific_name = models.CharField(max_length=255)
+    condition = models.CharField(max_length=50, choices=CONDITION_CHOICES)
+    image = models.ImageField(upload_to='herbs/', blank=True, null=True)
+    benefits = models.TextField(help_text="List benefits separated by commas", blank=True)
+    prescription = models.TextField(blank=True)
+    advice = models.TextField(blank=True)
+    procedure = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    locations = JSONField(default=list)   # [{lat:..., lng:...}, ...]
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+    def benefit_list(self):
+        if self.benefits:
+            return [b.strip() for b in self.benefits.split(',')]
+        return []
+
+    def __str__(self):
+        return f"{self.name} ({self.get_condition_display()})"
+        

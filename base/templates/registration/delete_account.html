@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="delete-confirm-container">
+  <h2>Delete Account</h2>
+  <p>Are you sure you want to permanently delete your account? This action cannot be undone.</p>
+
+  <form method="post" action="{% url 'delete_account' %}">
+    {% csrf_token %}
+    <button type="submit" class="delete-btn">Yes, Delete My Account</button>
+    <a href="{% url 'home' %}" class="cancel-btn">Cancel</a>
+  </form>
+</div>
+
+<style>
+  .delete-confirm-container {
+    max-width: 500px;
+    margin: 5rem auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  .delete-btn {
+    background-color: #e53935;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 1rem;
+  }
+  .delete-btn:hover {
+    background-color: #c62828;
+  }
+  .cancel-btn {
+    background-color: #9e9e9e;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+  }
+  .cancel-btn:hover {
+    background-color: #757575;
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HERBMED | Login & Signup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    /* ------------------------------------------- */
+    /* GLOBAL & BACKGROUND */
+    /* ------------------------------------------- */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      color: white;
+      padding: 20px;
+    }
+
+    /* Background Image with Blur Effect */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://static.vecteezy.com/system/resources/previews/030/817/484/non_2x/herbal-medicine-herbal-supplements-in-a-jar-with-green-leaves-background-capsules-herb-supplements-on-green-leaves-background-ai-generated-free-photo.jpg') no-repeat center center/cover;
+      filter: blur(5px);
+      z-index: -1;
+    }
+
+    /* ------------------------------------------- */
+    /* AUTH WRAPPER (MAIN CONTAINER) */
+    /* ------------------------------------------- */
+    .auth-wrapper {
+      width: 900px;
+      height: 680px; 
+      max-width: 95%; 
+      background: rgba(255, 255, 255, 0.1); 
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border-radius: 25px;
+      display: flex;
+      overflow: hidden;
+      box-shadow: 0 8px 50px rgba(0, 0, 0, 0.4); 
+      border: 1px solid rgba(255, 255, 255, 0.2); 
+      position: relative;
+      transition: filter 0.3s ease;
+    }
+    
+    .form-container {
+      width: 50%;
+      padding: 40px;
+      transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.6s ease;
+      background: rgba(255, 255, 255, 0.05); 
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-y: auto;
+    }
+    
+    .hidden {
+      transform: translateX(-100%); 
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      width: 50%;
+    }
+    
+    #loginForm:not(.hidden), #signupForm:not(.hidden) {
+        position: relative;
+        transform: translateX(0);
+    }
+
+    /* ------------------------------------------- */
+    /* SIDE PANEL (RIGHT DECORATION) */
+    /* ------------------------------------------- */
+    .side-panel {
+      width: 50%;
+      background: rgba(0, 0, 0, 0.2); 
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 40px;
+      text-align: center;
+      box-sizing: border-box;
+      position: relative; 
+      z-index: 2;
+    }
+
+    .auth-wrapper.right-active .side-panel {
+        order: -1;
+        transition: order 0.6s ease;
+    }
+    
+    /* ------------------------------------------- */
+    /* LOGO & TITLE */
+    /* ------------------------------------------- */
+    .login-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.5));
+      transition: transform 0.3s ease;
+      /* Visual placeholder for the logo */
+      background-color: rgba(255, 255, 255, 0.8); 
+      background-size: cover;
+      background-position: center;
+      border-radius: 50%; 
+    }
+    
+    /* Logo specific to the side panel for better visual distinction and spacing */
+    .side-panel-logo {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 25px; 
+    }
+    
+    .title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: #fff;
+      text-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+      text-align: center;
+    }
+    
+    /* ------------------------------------------- */
+    /* FORM ELEMENTS & ICONS */
+    /* ------------------------------------------- */
+    label {
+      font-weight: 700;
+      font-size: 20px;
+      margin-bottom: 6px;
+      margin-top: 15px;
+      display: block;
+      color: #e0ffe0; 
+      text-align: left;
+    }
+/* INPUT CONTAINERS FIXED */
+.input-container {
+    position: relative;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.input-container input {
+    width: 100%;
+    padding: 12px 45px 12px 45px; /* left & right padding for icons */
+    border: none;
+    border-radius: 12px;
+    outline: none;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    box-sizing: border-box;
+    transition: all 0.3s;
+}
+
+.input-container input:focus {
+    border: 2px solid #3de22e;
+    box-shadow: 0 0 10px rgba(61, 226, 46, 0.8);
+}
+
+.input-container .icon {
+    position: absolute;
+    top: 50%;
+    left: 15px; /* left inside input */
+    transform: translateY(-50%);
+    height: 20px;
+    width: 20px;
+    color: #555;
+    pointer-events: none; /* icon is decorative */
+    z-index: 10;
+}
+
+.input-container .icon-right {
+    position: absolute;
+    top: 50%;
+    right: 15px; /* right inside input */
+    transform: translateY(-50%);
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+    z-index: 10;
+    color: #777;
+}
+
+    
+    /* ------------------------------------------- */
+    /* BUTTONS */
+    /* ------------------------------------------- */
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3de22e, #72ff47);
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 15px;
+      box-shadow: 0 4px 15px rgba(0, 255, 0, 0.4);
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #72ff47, #3de22e);
+      transform: scale(1.02);
+      box-shadow: 0 6px 20px rgba(0, 255, 0, 0.6);
+    }
+    
+    .extra {
+        margin-top: 15px;
+        font-size: 20px;
+        text-align: center;
+        color: #e0ffe0;
+    }
+    .extra a {
+        color: #144e02;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s;
+    }
+    .extra a:hover {
+        color: #ffffff;
+    }
+    
+    /* ------------------------------------------- */
+    /* SIDE PANEL TEXT & BUTTON */
+    /* ------------------------------------------- */
+    .panel-title {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 15px;
+      color: #fff;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    }
+    .side-panel p {
+        font-size: 18px;
+        line-height: 1.4;
+    }
+
+    .switch-btn {
+      margin-top: 30px;
+      padding: 12px 30px;
+      border-radius: 30px;
+      border: 2px solid rgb(42, 99, 4);
+      background: transparent;
+      color: rgb(122, 241, 24);
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      width: auto;
+    }
+
+    .switch-btn:hover {
+      background: rgb(112, 250, 58);
+      color: #17c454;
+      transform: scale(1.05);
+    }
+    
+    /* ------------------------------------------- */
+    /* POPUP MESSAGES */
+    /* ------------------------------------------- */
+    .blurred {
+        filter: blur(5px);
+        pointer-events: none;
+        user-select: none;
+    }
+
+    #popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .popup-message {
+      background-color: #4caf50;
+      color: #fff;
+      padding: 20px 40px;
+      border-radius: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      opacity: 1;
+      transform: scale(1);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    
+    .popup-message.error { background-color: #f44336; }
+    .popup-message.info { background-color: #2196f3; }
+    .popup-message.warning { background-color: #ff9800; }
+
+    .fade-out {
+      opacity: 0 !important;
+      transform: scale(0.7) !important;
+    }
+
+    /* ------------------------------------------- */
+    /* RESPONSIVENESS (MEDIA QUERIES) */
+    /* ------------------------------------------- */
+    
+    /* Phones (max-width 768px) */
+    @media (max-width: 768px) {
+        body {
+            overflow-y: auto; 
+            height: auto;
+            min-height: 100vh;
+        }
+
+        .auth-wrapper {
+            flex-direction: column; 
+            height: auto; 
+            width: 90%;
+            max-width: 500px;
+            margin: 40px auto;
+        }
+        
+        .form-container, .side-panel {
+            width: 100%; 
+            padding: 30px 20px;
+        }
+        
+        .form-container {
+            position: relative;
+            transform: none !important;
+            opacity: 1 !important;
+        }
+        
+        .hidden {
+            display: none !important; 
+            pointer-events: none;
+        }
+        
+        .side-panel {
+            order: 2; 
+        }
+        
+        .auth-wrapper.right-active .side-panel {
+            order: 2; 
+        }
+    }
+    
+    /* Very Small Phones (max-width 480px) */
+    @media (max-width: 480px) {
+        .title {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .panel-title {
+            font-size: 28px;
+        }
+        .input-container input {
+            font-size: 14px;
+        }
+    }
+    /* SIDE PANEL LOGO ABOVE TEXT */
+.side-panel-logo {
+    width: 250px; /* Adjust size as needed */
+    height: auto;
+    margin-bottom: 25px; /* space between logo and text */
+    display: block;
+    filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.3));
+    transition: transform 0.3s ease;
+}
+
+.side-panel-logo:hover {
+    transform: scale(1.05);
+}
+
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+    color: white;
+}
+
+    
+  </style>
+</head>
+
+<body>
+
+{% if messages %}
+<div id="popup-overlay">
+    {% for message in messages %}
+      <div class="popup-message {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="auth-wrapper">
+
+  <div id="loginForm" class="form-container">
+    <div class="title">Log In to HERBMED</div>
+
+    <form method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+      <label>Username</label>
+      <div class="input-container">
+        <i data-feather="user" class="icon"></i>
+        <input type="text" name="username" placeholder="Enter Username" required>
+      </div>
+
+      <label>Password</label>
+<div class="input-container">
+    <i data-feather="lock" class="icon"></i> <!-- Left icon -->
+    <input type="password" name="password" id="loginPassword" placeholder="Enter Password" required>
+    <i data-feather="eye-off" class="icon-right" onclick="togglePasswordVisibility('loginPassword', this)"></i> <!-- Right toggle -->
+</div>
+
+      <button type="submit">Login</button>
+      
+      <div class="extra">
+          <a href="#">Forgot your password?</a>
+      </div>
+    </form>
+  </div>
+
+  <div id="signupForm" class="form-container hidden">
+    <div class="title">Create Your Account</div>
+
+    <form method="POST" action="{% url 'signup_view' %}">
+      {% csrf_token %}
+      
+      <label>Full Name</label>
+      <div class="input-container">
+          <i data-feather="users" class="icon"></i>
+          <input type="text" name="fullname" placeholder="Enter full name" required>
+      </div>
+
+      <label>Username</label>
+      <div class="input-container">
+          <i data-feather="user" class="icon"></i>
+          <input type="text" name="username" placeholder="Enter username" required>
+      </div>
+
+      <label>Email</label>
+      <div class="input-container">
+          <i data-feather="mail" class="icon"></i>
+          <input type="email" name="email" placeholder="Enter email" required>
+      </div>
+
+      <label>Password</label>
+      <div class="input-container">
+          <i data-feather="lock" class="icon"></i>
+          <input type="password" name="password" id="signupPassword" placeholder="Enter password" required>
+          <i data-feather="eye-off" class="icon-right" onclick="togglePasswordVisibility('signupPassword', this)"></i>
+      </div>
+
+      <label>Confirm Password</label>
+      <div class="input-container">
+          <i data-feather="lock" class="icon"></i>
+          <input type="password" name="confirm_password" id="confirmPassword" placeholder="Confirm password" required>
+          <i data-feather="eye-off" class="icon-right" onclick="togglePasswordVisibility('confirmPassword', this)"></i>
+      </div>
+
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+
+ <div class="side-panel">
+    <img src="{% static 'base/assets/logoHerbMed.png' %}" alt="Herbal Healing 3D" class="side-panel-logo">
+    
+    <div class="panel-title" id="panelTitle">HELLO, WELCOME BACK</div>
+    <p id="panelText">To keep connected with us, please login with your personal info.</p>
+
+    <button class="switch-btn" onclick="toggleForms()" id="switchBtn">Sign Up</button>
+</div>
+
+
+</div>
+
+<script>
+    // Initialize Feather Icons (for the beautiful icons in input fields)
+    feather.replace();
+
+    // Toggles the type of the password input field and the eye icon
+    function togglePasswordVisibility(fieldId, iconElement) {
+        const field = document.getElementById(fieldId);
+        const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
+        field.setAttribute('type', type);
+        
+        // Change the icon
+        if (type === 'text') {
+            iconElement.innerHTML = feather.icons['eye'].toSvg();
+        } else {
+            iconElement.innerHTML = feather.icons['eye-off'].toSvg();
+        }
+        feather.replace(); // Re-render the new icon
+    }
+    
+    // Toggles between the login and signup forms
+    function toggleForms() {
+        const wrapper = document.querySelector('.auth-wrapper');
+        const login = document.getElementById('loginForm');
+        const signup = document.getElementById('signupForm');
+        const title = document.getElementById('panelTitle');
+        const text = document.getElementById('panelText');
+        const btn = document.getElementById('switchBtn');
+        
+        // Toggle the classes
+        login.classList.toggle('hidden');
+        signup.classList.toggle('hidden');
+        wrapper.classList.toggle('right-active'); 
+
+        // Update the text in the side panel
+        if (signup.classList.contains('hidden')) {
+            // Login is visible
+            title.innerText = "HELLO, WELCOME BACK";
+            text.innerText = "To keep connected with us, please login with your personal info.";
+            btn.innerText = "Sign Up";
+        } else {
+            // Signup is visible
+            title.innerText = "WELCOME NEW USER!";
+            text.innerText = "Enter your personal details and start your journey with us.";
+            btn.innerText = "Login";
+        }
+    }
+
+    // Handles the popup message
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const popupOverlay = document.getElementById('popup-overlay');
+        const authWrapper = document.querySelector('.auth-wrapper');
+        
+        if (popupOverlay) {
+            // 1. Blur the main content
+            if (authWrapper) {
+                authWrapper.classList.add('blurred');
+            }
+            
+            // 2. Hide the overlay after a timeout
+            setTimeout(() => {
+                const popupMessage = popupOverlay.querySelector('.popup-message');
+                if (popupMessage) {
+                    popupMessage.classList.add('fade-out');
+                }
+                
+                // 3. Remove overlay and blur completely after the fade-out transition
+                setTimeout(() => {
+                    popupOverlay.style.display = 'none';
+                    if (authWrapper) {
+                        authWrapper.classList.remove('blurred');
+                    }
+                }, 600); 
+                
+            }, 3000); 
+        }
+    });
+
+</script>
+</body>
+</html>

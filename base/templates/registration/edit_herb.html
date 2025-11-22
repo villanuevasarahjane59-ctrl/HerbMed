@@ -1,0 +1,398 @@
+
+{% load static %}
+{% block content %}
+<style>
+    body {
+        background: #f6fff8;
+        font-family: "Poppins", sans-serif;
+        color: #2f3e46;
+    }
+
+    .form-container {
+        max-width: 650px;
+        margin: 60px auto;
+        background: #ffffff;
+        padding: 40px 50px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .form-container:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .form-header h2 {
+        color: #2e7d32;
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+
+    .form-header p {
+        color: #52796f;
+        font-size: 1rem;
+    }
+
+    form label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+        color: #1b4332;
+    }
+
+    input[type="text"],
+    select,
+    textarea,
+    input[type="file"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        font-size: 1rem;
+        margin-bottom: 20px;
+        transition: border-color 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #2e7d32;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .btn-submit {
+        display: inline-block;
+        background: linear-gradient(135deg, #66bb6a, #2e7d32);
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 500;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        background: linear-gradient(135deg, #43a047, #1b5e20);
+        transform: translateY(-2px);
+    }
+
+    .preview-container {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .preview-container img {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        object-fit: cover;
+        display: block;
+        margin: 0 auto;
+    }
+
+    /* ✅ Map styling */
+    #edit-map {
+    height: 350px;
+    width: 100%;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+.popup-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background-color: #4caf50;
+    color: #fff;
+    padding: 20px 40px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    z-index: 9999;
+}
+.popup-message.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+.popup-buttons {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.popup-buttons button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+.popup-buttons .yes-btn { background-color: #d9534f; color: white; }
+.popup-buttons .no-btn { background-color: #ccc; color: #333; }
+</style>
+
+<div class="form-container">
+    <div class="form-header">
+        <h2>Edit Herb - {{ herb.name }}</h2>
+        <p>Update the details of this herbal plant.</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label for="name">Herb Name</label>
+        <input type="text" id="name" name="name" value="{{ herb.name }}" required>
+
+        <label for="scientific_name">Scientific Name</label>
+        <input type="text" id="scientific_name" name="scientific_name" 
+               value="{{ herb.scientific_name }}" required>
+
+        <label for="condition">Condition</label>
+        <select id="condition" name="condition" required>
+            <option value="">-- Select Condition --</option>
+            <option value="cough" {% if herb.condition == "cough" %}selected{% endif %}>Cough</option>
+            <option value="cold" {% if herb.condition == "cold" %}selected{% endif %}>Cold & Flu</option>
+            <option value="fever" {% if herb.condition == "fever" %}selected{% endif %}>Fever</option>
+            <option value="skin" {% if herb.condition == "skin" %}selected{% endif %}>Skin Allergy</option>
+            <option value="wound" {% if herb.condition == "wound" %}selected{% endif %}>Wound Care</option>
+        </select>
+
+        <label for="benefits">Benefits</label>
+        <textarea id="benefits" name="benefits" required>{{ herb.benefits }}</textarea>
+
+        <label for="procedure">Procedure</label>
+        <textarea id="procedure" name="procedure" required>{{ herb.procedure }}</textarea>
+
+        <label for="prescription">Prescription</label>
+        <textarea id="prescription" name="prescription" required>{{ herb.prescription }}</textarea>
+
+        <label for="advice">Additional Advice</label>
+        <textarea id="advice" name="advice" required>{{ herb.advice }}</textarea>
+
+        <label for="image">Herb Image</label>
+        <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+        <div class="preview-container">
+            {% if herb.image %}
+                <img id="preview" src="{{ herb.image.url }}" alt="{{ herb.name }}">
+            {% else %}
+                <img id="preview" src="#" alt="Preview" style="display:none;">
+            {% endif %}
+        </div>
+
+        <!-- Location Section -->
+        <label for="location">Location Pins</label>
+
+        <input type="hidden" id="latitude" name="latitude" value="{{ herb.latitude }}">
+        <input type="hidden" id="longitude" name="longitude" value="{{ herb.longitude }}">
+        <input type="hidden" id="location_list" name="location_list" value='{{ herb.locations_json|default:"[]" }}'>
+
+        <div id="coordinateDisplay" style="margin-top: 10px; color:#1b4332;">
+            <strong>Pinned Location(s):</strong>
+            <span id="coordText"></span>
+        </div>
+
+        <div id="edit-map" style="height: 300px; width: 100%; margin: 15px 0; border-radius: 10px;"></div>
+        <div id="pinList" style="margin-top:10px;"></div>
+
+        <button type="submit" class="btn-submit">Update Herb</button>
+    </form>
+</div>
+
+<!-- Leaflet Scripts -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+function previewImage(event) {
+    const img = document.getElementById('preview');
+    img.src = URL.createObjectURL(event.target.files[0]);
+    img.style.display = 'block';
+}
+
+// ---------------- MAP INIT ----------------
+const editmap = L.map('edit-map').setView(
+    [{{ herb.latitude|default:"11.5908" }}, {{ herb.longitude|default:"124.4836" }}],
+    10
+);
+
+setTimeout(() => editmap.invalidateSize(), 300);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+    .addTo(editmap);
+
+// ---------------- LOAD LOCATIONS ----------------
+let locations = JSON.parse('{{ herb.locations_json|escapejs }}');
+let markers = [];
+
+// ---------------- CUSTOM MARKER WITH DELETE BUTTON ----------------
+function addMarker(lat, lng, index) {
+
+    const html = `
+        <div class="pin-wrapper" style="position:relative; width:25px; height:41px;">
+            <img src="https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png"
+                 style="width:25px; height:41px;">
+
+            <button 
+                class="marker-delete-btn"
+                data-index="${index}"
+                style="
+                    position:absolute;
+                    top:-6px;
+                    right:-6px;
+                    width:18px;
+                    height:18px;
+                    border-radius:50%;
+                    background:#d9534f;
+                    border:none;
+                    color:white;
+                    font-size:10px;
+                    line-height:18px;
+                    text-align:center;
+                    cursor:pointer;
+                    padding:0;
+                ">×</button>
+        </div>
+    `;
+
+    const icon = L.divIcon({
+        html: html,
+        className: "custom-pin",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+    });
+
+    const marker = L.marker([lat, lng], { icon }).addTo(editmap);
+
+    // prevent click bubbling so map won't receive click
+    const wrapper = marker._icon.querySelector(".pin-wrapper");
+    L.DomEvent.disableClickPropagation(wrapper);
+    L.DomEvent.disableScrollPropagation(wrapper);
+
+    markers.push(marker);
+    return marker;
+}
+
+// INITIAL LOAD
+locations.forEach((loc, i) => addMarker(loc.lat, loc.lng, i));
+
+
+// ---------------- UPDATE HIDDEN FIELDS ----------------
+function updateHiddenFields() {
+    document.getElementById("location_list").value = JSON.stringify(locations);
+
+    if (locations.length > 0) {
+        document.getElementById("latitude").value = locations[0].lat;
+        document.getElementById("longitude").value = locations[0].lng;
+    } else {
+        document.getElementById("latitude").value = "";
+        document.getElementById("longitude").value = "";
+    }
+}
+
+updateHiddenFields();
+
+function showPopupMessage(msg) {
+    let popup = document.createElement("div");
+    popup.className = "popup-message";
+    popup.textContent = msg;
+    document.body.appendChild(popup);
+
+    // trigger animation
+    setTimeout(() => popup.classList.add("show"), 50);
+
+    // remove after 2 seconds
+    setTimeout(() => {
+        popup.classList.remove("show");
+        setTimeout(() => document.body.removeChild(popup), 600);
+    }, 2000);
+}
+
+// ---------------- DELETE PIN BUTTON ----------------
+document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("marker-delete-btn")) {
+
+        e.stopPropagation();
+        e.preventDefault();
+
+        const index = parseInt(e.target.dataset.index);
+
+        // confirmation dialog
+        if (!confirm("Are you sure you want to delete this pin?")) return;
+
+        // Remove marker from map
+        editmap.removeLayer(markers[index]);
+
+        // Remove from arrays
+        markers.splice(index, 1);
+        locations.splice(index, 1);
+
+        // Rebuild markers to update indices
+        markers.forEach(m => editmap.removeLayer(m));
+        markers = [];
+
+        locations.forEach((loc, i) => addMarker(loc.lat, lng = loc.lng, i));
+
+        updateHiddenFields();
+
+         showPopupMessage("Pin deleted successfully!");
+    }
+});
+
+
+// ---------------- ADD NEW PIN ----------------
+editmap.on("click", e => {
+    const lat = e.latlng.lat;
+    const lng = e.latlng.lng;
+
+    locations.push({ lat, lng });
+    addMarker(lat, lng, locations.length - 1);
+
+    updateHiddenFields();
+});
+
+
+// ---------------- CLEAR ALL PINS BUTTON ----------------
+(function createClearButton() {
+    const btn = document.createElement("button");
+    btn.id = "clearPins";
+    btn.textContent = "Clear All Pins";
+    btn.style.margin = "10px 0";
+    btn.classList.add("btn-submit");
+
+    document.querySelector("form").insertBefore(btn, document.getElementById("edit-map"));
+
+    btn.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        if (!confirm("Delete ALL pins?")) return;
+
+        markers.forEach(m => editmap.removeLayer(m));
+        markers = [];
+        locations = [];
+
+        updateHiddenFields();
+        showPopupMessage("All pins deleted successfully!");
+    });
+})();
+</script>
+{% endblock %}
