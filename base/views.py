@@ -298,8 +298,11 @@ def run_migrations(request):
     from django.core.management import call_command
     from io import StringIO
     
-    out = StringIO()
-    call_command('create_migration', stdout=out)
-    output = out.getvalue()
-    
-    return HttpResponse(f'Migrations completed!<br><pre>{output}</pre>')
+    try:
+        out = StringIO()
+        call_command('makemigrations', 'base', stdout=out)
+        call_command('migrate', stdout=out)
+        output = out.getvalue()
+        return HttpResponse(f'Migrations completed successfully!<br><pre>{output}</pre>')
+    except Exception as e:
+        return HttpResponse(f'Migration error: {str(e)}')
