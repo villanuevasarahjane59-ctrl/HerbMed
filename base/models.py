@@ -34,6 +34,7 @@ class Herb(models.Model):
     condition = models.CharField(max_length=50, choices=CONDITION_CHOICES)
     image = models.ImageField(upload_to=herb_image_path, blank=True, null=True)
     image_url = models.URLField(blank=True, null=True, help_text="Alternative to image upload - paste image URL")
+    image_base64 = models.TextField(blank=True, null=True, help_text="Base64 encoded image data")
     benefits = models.TextField(help_text="List benefits separated by commas", blank=True)
     prescription = models.TextField(blank=True)
     advice = models.TextField(blank=True)
@@ -51,16 +52,23 @@ class Herb(models.Model):
         return []
 
     def get_image_url(self):
-        # First check if we have an uploaded image file
+        # Priority 1: Image URL field (external links)
+        if self.image_url and self.image_url.strip():
+            return self.image_url.strip()
+        # Priority 2: Base64 image (persistent on Render)
+        if self.image_base64:
+            return f'data:image/png;base64,{self.image_base64}'
+        # Priority 3: Static image based on herb name
+        if self.name:
+            static_path = f'/static/base/assets/herbs/{self.name.lower().replace(" ", "_")}.png'
+            return static_path
+        # Priority 4: Uploaded image (will reset on Render)
         if self.image:
             try:
                 return self.image.url
             except (ValueError, AttributeError):
                 pass
-        # Then check for image URL
-        if self.image_url and self.image_url.strip():
-            return self.image_url.strip()
-        # Return default only if no image is available
+        # Fallback: Default image
         return '/static/base/assets/herbs_292843331-removebg-preview.png'
     
     def __str__(self):
