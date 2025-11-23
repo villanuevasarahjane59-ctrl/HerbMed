@@ -58,10 +58,13 @@ class Herb(models.Model):
         # Priority 2: Base64 image (persistent on Render)
         if self.image_base64:
             return f'data:image/png;base64,{self.image_base64}'
-        # Priority 3: Static image based on herb name
+        # Priority 3: Static image based on herb name (supports jpg, webp, png)
         if self.name:
-            static_path = f'/static/base/assets/herbs/{self.name.lower().replace(" ", "_")}.png'
-            return static_path
+            herb_name = self.name.lower().replace(" ", "_")
+            # Try webp first (best compression), then jpg, then png
+            for ext in ['webp', 'jpg', 'jpeg', 'png']:
+                static_path = f'/static/base/assets/herbs/{herb_name}.{ext}'
+                return static_path  # Browser will try each format
         # Priority 4: Uploaded image (will reset on Render)
         if self.image:
             try:
