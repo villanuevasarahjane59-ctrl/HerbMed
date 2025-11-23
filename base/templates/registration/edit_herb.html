@@ -192,18 +192,13 @@
         <label for="image">Herb Image (Upload)</label>
         <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
         
-        <label for="image_url">OR Image URL/Path</label>
+        <label for="image_url">OR Image URL/Path (Recommended for Deployment)</label>
         <input type="text" id="image_url" name="image_url" value="{{ herb.image_url }}" placeholder="e.g. /static/base/assets/cold/ginger.webp or https://example.com/image.jpg">
-        <small style="color: #666; font-size: 0.9rem;">Use static file path like: /static/base/assets/cold/ginger.webp</small>
+        <small style="color: #666; font-size: 0.9rem;">For deployment stability, use static file paths like: /static/base/assets/cold/ginger.webp<br>
+        Available folders: cold/, cough/, fever/, skin/, wound/, or root assets/</small>
         
         <div class="preview-container">
-            {% if herb.image %}
-                <img id="preview" src="{{ herb.image.url }}" alt="{{ herb.name }}">
-            {% elif herb.image_url %}
-                <img id="preview" src="{{ herb.image_url }}" alt="{{ herb.name }}">
-            {% else %}
-                <img id="preview" src="{% static 'base/assets/herbs_292843331-removebg-preview.png' %}" alt="Preview">
-            {% endif %}
+            <img id="preview" src="{{ herb.get_image_url }}" alt="{{ herb.name }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
         </div>
 
         <!-- Location Section -->
@@ -401,5 +396,37 @@ editmap.on("click", e => {
         showPopupMessage("All pins deleted successfully!");
     });
 })();
+
+// Auto-suggest static image path based on herb name
+document.getElementById('name').addEventListener('input', function() {
+    const herbName = this.value.toLowerCase().replace(/\s+/g, '-').replace(/_/g, '-');
+    const imageUrlField = document.getElementById('image_url');
+    const conditionField = document.getElementById('condition');
+    
+    if (herbName && !imageUrlField.value) {
+        let suggestedPath = '/static/base/assets/';
+        
+        // Add condition folder if selected
+        if (conditionField.value) {
+            suggestedPath += conditionField.value + '/';
+        }
+        
+        suggestedPath += herbName + '.png';
+        imageUrlField.placeholder = `Suggested: ${suggestedPath}`;
+    }
+});
+
+// Update suggestion when condition changes
+document.getElementById('condition').addEventListener('change', function() {
+    document.getElementById('name').dispatchEvent(new Event('input'));
+});
+
+// Preview image from URL
+document.getElementById('image_url').addEventListener('input', function() {
+    const url = this.value.trim();
+    if (url) {
+        document.getElementById('preview').src = url;
+    }
+});
 </script>
 {% endblock %}

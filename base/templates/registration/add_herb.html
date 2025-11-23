@@ -183,12 +183,13 @@
         <label for="image">Herb Image (Upload)</label>
         <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
         
-        <label for="image_url">OR Image URL/Path</label>
+        <label for="image_url">OR Image URL/Path (Recommended for Deployment)</label>
         <input type="text" id="image_url" name="image_url" placeholder="e.g. /static/base/assets/cold/ginger.webp or https://example.com/image.jpg">
-        <small style="color: #666; font-size: 0.9rem;">Use static file path like: /static/base/assets/cold/ginger.webp</small>
+        <small style="color: #666; font-size: 0.9rem;">For deployment stability, use static file paths like: /static/base/assets/cold/ginger.webp<br>
+        Available folders: cold/, cough/, fever/, skin/, wound/, or root assets/</small>
         
         <div class="preview-container">
-            <img id="preview" src="{% static 'base/assets/herbs_292843331-removebg-preview.png' %}" alt="Preview" style="max-width: 150px; max-height: 150px; border-radius: 10px; border: 1px solid #ddd; object-fit: cover; display: block; margin: 0 auto;">
+            <img id="preview" src="{% static 'base/assets/herbs_292843331-removebg-preview.png' %}" alt="Preview" style="max-width: 150px; max-height: 150px; border-radius: 10px; border: 1px solid #ddd; object-fit: cover; display: block; margin: 0 auto;" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
         </div>
 
         <label for="location">Location</label>
@@ -221,11 +222,13 @@
     iconSize: [26, 26],
     iconAnchor: [13, 13],
 });
-    // Image preview
+    // Image preview from file upload
     function previewImage(event) {
         const image = document.getElementById('preview');
-        image.src = URL.createObjectURL(event.target.files[0]);
-        image.style.display = 'block';
+        if (event.target.files && event.target.files[0]) {
+            image.src = URL.createObjectURL(event.target.files[0]);
+            image.style.display = 'block';
+        }
     }
 
     // Initialize map
@@ -255,6 +258,38 @@
 
         // Store JSON for backend
         document.getElementById("location_list").value = JSON.stringify(locations);
+    });
+
+    // Auto-suggest static image path based on herb name
+    document.getElementById('name').addEventListener('input', function() {
+        const herbName = this.value.toLowerCase().replace(/\s+/g, '-').replace(/_/g, '-');
+        const imageUrlField = document.getElementById('image_url');
+        const conditionField = document.getElementById('condition');
+        
+        if (herbName && !imageUrlField.value) {
+            let suggestedPath = '/static/base/assets/';
+            
+            // Add condition folder if selected
+            if (conditionField.value) {
+                suggestedPath += conditionField.value + '/';
+            }
+            
+            suggestedPath += herbName + '.png';
+            imageUrlField.placeholder = `Suggested: ${suggestedPath}`;
+        }
+    });
+    
+    // Update suggestion when condition changes
+    document.getElementById('condition').addEventListener('change', function() {
+        document.getElementById('name').dispatchEvent(new Event('input'));
+    });
+    
+    // Preview image from URL
+    document.getElementById('image_url').addEventListener('input', function() {
+        const url = this.value.trim();
+        if (url) {
+            document.getElementById('preview').src = url;
+        }
     });
 </script>
 {% endblock %}

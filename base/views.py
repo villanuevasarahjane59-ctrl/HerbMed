@@ -119,6 +119,19 @@ def add_herb(request):
         locations_json = request.POST.get("location_list")
         locations = json.loads(locations_json) if locations_json else []
 
+        # Handle image logic - prioritize static paths for deployment
+        final_image = None
+        final_image_url = image_url
+        
+        # If no image_url provided but we have an upload, suggest a static path
+        if image and not image_url:
+            herb_name = name.lower().replace(" ", "-").replace("_", "-")
+            final_image_url = f'/static/base/assets/{herb_name}.png'
+            # Still save the uploaded image for local development
+            final_image = image
+        elif image:
+            final_image = image
+        
         # Save herb
         herb = Herb.objects.create(
             name=name,
@@ -128,8 +141,8 @@ def add_herb(request):
             procedure=procedure,
             prescription=prescription,
             advice=advice,
-            image=image,
-            image_url=image_url,
+            image=final_image,
+            image_url=final_image_url,
             locations=locations  # MUST USE JSONFIELD IN MODEL
         )
 
@@ -156,14 +169,21 @@ def edit_herb(request, pk):
         herb.prescription = request.POST.get("prescription", herb.prescription)
         herb.advice = request.POST.get("advice", herb.advice)
 
-        # image (optional)
-        if request.FILES.get("image"):
-            herb.image = request.FILES["image"]
+        # Handle image updates with deployment-friendly logic
+        new_image = request.FILES.get("image")
+        new_image_url = request.POST.get("image_url")
         
-        # image_url (optional)
-        image_url = request.POST.get("image_url")
-        if image_url:
-            herb.image_url = image_url
+        if new_image and not new_image_url:
+            # If uploading new image without URL, suggest static path
+            herb_name = herb.name.lower().replace(" ", "-").replace("_", "-")
+            herb.image_url = f'/static/base/assets/{herb_name}.png'
+            herb.image = new_image
+        elif new_image:
+            herb.image = new_image
+            if new_image_url:
+                herb.image_url = new_image_url
+        elif new_image_url:
+            herb.image_url = new_image_url
 
         # --- LOCATION HANDLING ---
         # 1) If a JSON 'location_list' was submitted (from the edit form), parse and save it:
@@ -302,6 +322,18 @@ def run_migrations(request):
     except Exception as e:
         return HttpResponse(f'Migration error: {str(e)}')
 
+def fix_herb_images(request):
+    from django.core.management import call_command
+    from io import StringIO
+    
+    try:
+        out = StringIO()
+        call_command('fix_herb_images', stdout=out)
+        output = out.getvalue()
+        return HttpResponse(f'Herb images fixed successfully!<br><pre>{output}</pre>')
+    except Exception as e:
+        return HttpResponse(f'Fix images error: {str(e)}')
+
 def debug_herb_images(request):
     herbs = Herb.objects.all()
     debug_info = []
@@ -353,7 +385,8 @@ def debug_herb_images(request):
             html += f'<img src="{info["get_image_url"]}" style="max-width:100px; max-height:100px;">'
         html += '</div>'
     
-    html += '<br><a href="/run-migrations/" style="background:blue;color:white;padding:10px;text-decoration:none;">Run Fix Command</a>'
+    html += '<br><a href="/run-migrations/" style="background:blue;color:white;padding:10px;text-decoration:none;margin-right:10px;">Run Migrations</a>'
+    html += '<a href="/fix-images/" style="background:green;color:white;padding:10px;text-decoration:none;">Fix Herb Images</a>'
     
     return HttpResponse(html)
 

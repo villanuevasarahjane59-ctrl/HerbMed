@@ -52,25 +52,34 @@ class Herb(models.Model):
         return []
 
     def get_image_url(self):
-        # Priority 1: Image URL field (external links)
+        # Priority 1: Image URL field (external links or static paths)
         if self.image_url and self.image_url.strip():
-            return self.image_url.strip()
+            url = self.image_url.strip()
+            # If it's already a full URL or static path, return as is
+            if url.startswith(('http://', 'https://', '/static/', '/media/')):
+                return url
+            # If it's just a filename, try to find it in static assets
+            return f'/static/base/assets/{url}'
+        
         # Priority 2: Base64 image (persistent on Render)
         if self.image_base64:
             return f'data:image/png;base64,{self.image_base64}'
-        # Priority 3: Static image based on herb name (supports jpg, webp, png)
-        if self.name:
-            herb_name = self.name.lower().replace(" ", "_")
-            # Try webp first (best compression), then jpg, then png
-            for ext in ['webp', 'jpg', 'jpeg', 'png']:
-                static_path = f'/static/base/assets/herbs/{herb_name}.{ext}'
-                return static_path  # Browser will try each format
-        # Priority 4: Uploaded image (will reset on Render)
+        
+        # Priority 3: Try uploaded image (but will fail on Render after restart)
         if self.image:
             try:
-                return self.image.url
-            except (ValueError, AttributeError):
+                # Check if file actually exists
+                if hasattr(self.image, 'url') and self.image.url:
+                    return self.image.url
+            except (ValueError, AttributeError, FileNotFoundError):
                 pass
+        
+        # Priority 4: Try to find static image based on herb name
+        if self.name:
+            # Try most common naming pattern first
+            herb_name = self.name.lower().replace(" ", "-").replace("_", "-")
+            return f'/static/base/assets/{herb_name}.png'
+        
         # Fallback: Default image
         return '/static/base/assets/herbs_292843331-removebg-preview.png'
     

@@ -1298,13 +1298,7 @@ img {
             <div class="herb-grid">
                 {% for herb in group.list %}
                 <div class="herb-card">
-                    {% if herb.image %}
-                      <img src="{{ herb.image.url }}" alt="{{ herb.name }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
-                    {% elif herb.image_url %}
-                      <img src="{{ herb.image_url }}" alt="{{ herb.name }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
-                    {% else %}
-                      <img src="{% static 'base/assets/herbs_292843331-removebg-preview.png' %}" alt="{{ herb.name }}">
-                    {% endif %}
+                    <img src="{{ herb.get_image_url }}" alt="{{ herb.name }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
                     <div class="herb-info">
                         <h3>{{ herb.name }}</h3>
                         <p><em>{{ herb.scientific_name }}</em></p>
