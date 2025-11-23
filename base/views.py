@@ -7,6 +7,7 @@ from .models import CustomUser, Herb
 from .models import Herb
 from django.contrib.auth import get_user_model, logout
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 import json
 
 def homepage(request):
@@ -300,3 +301,32 @@ def run_migrations(request):
         return HttpResponse(f'Migrations completed successfully!<br><pre>{output}</pre>')
     except Exception as e:
         return HttpResponse(f'Migration error: {str(e)}')
+
+def debug_herb_images(request):
+    herbs = Herb.objects.all()
+    debug_info = []
+    
+    for herb in herbs:
+        info = {
+            'id': herb.id,
+            'name': herb.name,
+            'condition': herb.condition,
+            'image_field': str(herb.image) if herb.image else 'None',
+            'image_url_field': herb.image_url or 'None',
+            'get_image_url': herb.get_image_url(),
+        }
+        debug_info.append(info)
+    
+    html = '<h1>Herb Images Debug</h1>'
+    for info in debug_info:
+        html += f'<div style="border:1px solid #ccc; margin:10px; padding:10px;">'
+        html += f'<h3>{info["name"]} (ID: {info["id"]})</h3>'
+        html += f'<p><strong>Condition:</strong> {info["condition"]}</p>'
+        html += f'<p><strong>Image Field:</strong> {info["image_field"]}</p>'
+        html += f'<p><strong>Image URL Field:</strong> {info["image_url_field"]}</p>'
+        html += f'<p><strong>get_image_url():</strong> {info["get_image_url"]}</p>'
+        if info["get_image_url"] != '/static/base/assets/herbs_292843331-removebg-preview.png':
+            html += f'<img src="{info["get_image_url"]}" style="max-width:100px; max-height:100px;">'
+        html += '</div>'
+    
+    return HttpResponse(html)

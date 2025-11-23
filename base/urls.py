@@ -27,6 +27,7 @@ urlpatterns = [
      path('create-admin/', views.create_admin_user, name='create_admin'),
      path('populate-herbs/', views.populate_herbs, name='populate_herbs'),
      path('run-migrations/', views.run_migrations, name='run_migrations'),
+     path('debug-images/', views.debug_herb_images, name='debug_herb_images'),
 ]
 
 if settings.DEBUG:
