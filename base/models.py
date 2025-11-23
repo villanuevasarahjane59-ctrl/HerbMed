@@ -7,7 +7,7 @@ import os
 def herb_image_path(instance, filename):
     ext = filename.split('.')[-1]
     filename = f"{uuid.uuid4().hex}_{instance.name.replace(' ', '_')}.{ext}"
-    return os.path.join('herbs', filename)
+    return f'herbs/{filename}'
 
 class CustomUser(AbstractUser):
     fullname = models.CharField(max_length=255)
