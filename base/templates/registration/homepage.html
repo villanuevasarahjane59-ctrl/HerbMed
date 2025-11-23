@@ -1594,49 +1594,30 @@ header {
     <h2>Explore Our Herbal Remedies</h2>
 
     <div class="plant-grid">
+      {% for herb in featured_herbs %}
       <div class="plant-card">
         <div class="plant-image">
-          <img src="{% static 'base/assets/cold/ginger.webp' %}" alt="Ginger">
+          <img src="{{ herb.get_image_url }}" alt="{{ herb.name }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
         </div>
         <div class="plant-details">
-          <h3>Ginger</h3>
-          <p>Zingiber officinale</p>
-          <span>Relieves nausea, supports digestion, and boosts immunity.</span>
+          <h3>{{ herb.name }}</h3>
+          <p>{{ herb.scientific_name }}</p>
+          <span>{{ herb.benefits|truncatewords:10 }}</span>
         </div>
       </div>
-
+      {% empty %}
+      <!-- Fallback if no herbs in database -->
       <div class="plant-card">
         <div class="plant-image">
-          <img src="{% static 'base/assets/cough/Turmeric.png' %}" alt="Turmeric">
+          <img src="{% static 'base/assets/herbs_292843331-removebg-preview.png' %}" alt="Herbal Medicine">
         </div>
         <div class="plant-details">
-          <h3>Turmeric</h3>
-          <p>Curcuma longa</p>
-          <span>Rich in antioxidants and supports healthy inflammation response.</span>
+          <h3>Herbal Medicine</h3>
+          <p>Natural Remedies</p>
+          <span>Discover the healing power of nature's pharmacy.</span>
         </div>
       </div>
-
-      <div class="plant-card">
-        <div class="plant-image">
-          <img src="{% static 'base/assets/skin allergies/aloe-vera-leaves.png' %}" alt="Aloe Vera">
-        </div>
-        <div class="plant-details">
-          <h3>Aloe Vera</h3>
-          <p>Aloe barbadensis miller</p>
-          <span>Promotes healing, hydrates skin, and aids in digestion.</span>
-        </div>
-      </div>
-
-      <div class="plant-card">
-        <div class="plant-image">
-          <img src="{% static 'base/assets/cold/lemon (1).png' %}" alt="Lemongrass">
-        </div>
-        <div class="plant-details">
-          <h3>Lemon</h3>
-          <p>Cymbopogon citratus</p>
-          <span>Calming aroma, helps relieve stress and anxiety naturally.</span>
-        </div>
-      </div>
+      {% endfor %}
     </div>
   </section>
 

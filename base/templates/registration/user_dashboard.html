@@ -3176,11 +3176,11 @@ main {
                    data-scientific-name="{{ herb.scientific_name|lower }}" 
                    data-condition="{{ condition_key }}">
                 <div class="image">
-                  <img src="{{ herb.get_image_url }}?id={{ herb.pk }}&name={{ herb.name|slugify }}&t={% now 'U' %}" 
+                  <img src="{% if herb.image_url %}{{ herb.image_url }}{% else %}{% static 'base/assets/herbs_292843331-removebg-preview.png' %}{% endif %}" 
                        alt="{{ herb.name }}" 
                        data-herb-id="{{ herb.pk }}" 
                        data-herb-name="{{ herb.name }}" 
-                       onerror="console.log('Image failed for {{ herb.name }}:', this.src); this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
+                       onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
                 </div>
                 <h4>{{ herb.name }}</h4>
                 <p>{{ herb.benefits }}</p>
@@ -3265,7 +3265,7 @@ main {
       key: "{{ herb.name|slugify }}_{{ condition_key }}",
         name: "{{ herb.name }}",
         scientific_name: "{{ herb.scientific_name|default:'' }}",
-        img: "{{ herb.get_image_url }}?id={{ herb.pk }}&name={{ herb.name|slugify }}&t={% now 'U' %}",
+        img: "{% if herb.image_url %}{{ herb.image_url }}{% else %}{% static 'base/assets/herbs_292843331-removebg-preview.png' %}{% endif %}",
         benefits: ["{{ herb.benefits|escapejs }}"],
         prescription: "{{ herb.prescription|escapejs }}",
         advice: "{{ herb.advice|escapejs }}",

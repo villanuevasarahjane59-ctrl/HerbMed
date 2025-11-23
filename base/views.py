@@ -11,7 +11,11 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 def homepage(request):
-    return render(request, "registration/homepage.html")
+    # Get first 4 herbs for homepage display
+    featured_herbs = Herb.objects.all()[:4]
+    return render(request, "registration/homepage.html", {
+        'featured_herbs': featured_herbs
+    })
 
 def signup_view(request):
     if request.method == "POST":
