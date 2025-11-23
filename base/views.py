@@ -328,11 +328,11 @@ def fix_herb_images(request):
     
     try:
         out = StringIO()
-        call_command('fix_herb_images', stdout=out)
+        call_command('restore_herb_images', stdout=out)
         output = out.getvalue()
-        return HttpResponse(f'Herb images fixed successfully!<br><pre>{output}</pre>')
+        return HttpResponse(f'Herb images restored successfully!<br><pre>{output}</pre>')
     except Exception as e:
-        return HttpResponse(f'Fix images error: {str(e)}')
+        return HttpResponse(f'Restore images error: {str(e)}')
 
 def debug_herb_images(request):
     herbs = Herb.objects.all()
@@ -386,7 +386,7 @@ def debug_herb_images(request):
         html += '</div>'
     
     html += '<br><a href="/run-migrations/" style="background:blue;color:white;padding:10px;text-decoration:none;margin-right:10px;">Run Migrations</a>'
-    html += '<a href="/fix-images/" style="background:green;color:white;padding:10px;text-decoration:none;">Fix Herb Images</a>'
+    html += '<a href="/fix-images/" style="background:green;color:white;padding:10px;text-decoration:none;">Restore Herb Images</a>'
     
     return HttpResponse(html)
 
