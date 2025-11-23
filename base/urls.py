@@ -28,6 +28,7 @@ urlpatterns = [
      path('populate-herbs/', views.populate_herbs, name='populate_herbs'),
      path('run-migrations/', views.run_migrations, name='run_migrations'),
      path('debug-images/', views.debug_herb_images, name='debug_herb_images'),
+     path('check-images/', views.check_images, name='check_images'),
      path('fix-images/', views.fix_herb_images, name='fix_herb_images'),
 ]
 

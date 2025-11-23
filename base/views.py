@@ -356,3 +356,21 @@ def debug_herb_images(request):
     html += '<br><a href="/run-migrations/" style="background:blue;color:white;padding:10px;text-decoration:none;">Run Fix Command</a>'
     
     return HttpResponse(html)
+
+def check_images(request):
+    herbs = Herb.objects.all()
+    html = '<h1>Image Check</h1>'
+    
+    for herb in herbs:
+        html += f'<div style="border:1px solid #ccc; margin:10px; padding:10px;">'
+        html += f'<h3>{herb.name} (ID: {herb.pk})</h3>'
+        html += f'<p>Image field: {herb.image}</p>'
+        html += f'<p>Image URL field: {herb.image_url}</p>'
+        html += f'<p>get_image_url(): {herb.get_image_url()}</p>'
+        
+        # Show actual image
+        img_url = herb.get_image_url()
+        html += f'<img src="{img_url}" style="max-width:150px; max-height:150px; border:1px solid red;">'
+        html += '</div>'
+    
+    return HttpResponse(html)

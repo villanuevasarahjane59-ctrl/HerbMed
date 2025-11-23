@@ -3136,13 +3136,11 @@ main {
                    data-scientific-name="{{ herb.scientific_name|lower }}" 
                    data-condition="{{ condition_key }}">
                 <div class="image">
-                  {% if herb.image %}
-                    <img src="{{ herb.image.url }}?v={{ herb.pk }}&t={% now 'U' %}" alt="{{ herb.name }}" data-herb-id="{{ herb.pk }}" data-image-path="{{ herb.image }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
-                  {% elif herb.image_url %}
-                    <img src="{{ herb.image_url }}?v={{ herb.pk }}&t={% now 'U' %}" alt="{{ herb.name }}" data-herb-id="{{ herb.pk }}" data-image-path="{{ herb.image_url }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
-                  {% else %}
-                    <img src="{% static 'base/assets/herbs_292843331-removebg-preview.png' %}" alt="{{ herb.name }}" data-herb-id="{{ herb.pk }}">
-                  {% endif %}
+                  <img src="{{ herb.get_image_url }}?id={{ herb.pk }}&name={{ herb.name|slugify }}&t={% now 'U' %}" 
+                       alt="{{ herb.name }}" 
+                       data-herb-id="{{ herb.pk }}" 
+                       data-herb-name="{{ herb.name }}" 
+                       onerror="console.log('Image failed for {{ herb.name }}:', this.src); this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
                 </div>
                 <h4>{{ herb.name }}</h4>
                 <p>{{ herb.benefits }}</p>
@@ -3227,7 +3225,7 @@ main {
       key: "{{ herb.name|slugify }}_{{ condition_key }}",
         name: "{{ herb.name }}",
         scientific_name: "{{ herb.scientific_name|default:'' }}",
-        img: "{% if herb.image %}{{ herb.image.url }}?v={{ herb.pk }}&t={% now 'U' %}{% elif herb.image_url %}{{ herb.image_url }}?v={{ herb.pk }}&t={% now 'U' %}{% else %}{% static 'base/assets/herbs_292843331-removebg-preview.png' %}{% endif %}",
+        img: "{{ herb.get_image_url }}?id={{ herb.pk }}&name={{ herb.name|slugify }}&t={% now 'U' %}",
         benefits: ["{{ herb.benefits|escapejs }}"],
         prescription: "{{ herb.prescription|escapejs }}",
         advice: "{{ herb.advice|escapejs }}",

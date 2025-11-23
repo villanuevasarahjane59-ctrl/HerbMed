@@ -51,12 +51,17 @@ class Herb(models.Model):
         return []
 
     def get_image_url(self):
-        # Prioritize image_url field for production
+        # First check if we have an uploaded image file
+        if self.image:
+            try:
+                return self.image.url
+            except (ValueError, AttributeError):
+                pass
+        # Then check for image URL
         if self.image_url and self.image_url.strip():
             return self.image_url.strip()
-        elif self.image:
-            return self.image.url
-        return '/static/base/assets/herbs_292843331-removebg-preview.png'  # default
+        # Return default only if no image is available
+        return '/static/base/assets/herbs_292843331-removebg-preview.png'
     
     def __str__(self):
         return f"{self.name} ({self.get_condition_display()})"
