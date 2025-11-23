@@ -54,12 +54,7 @@ class Herb(models.Model):
     def get_image_url(self):
         # Priority 1: Image URL field (external links or static paths)
         if self.image_url and self.image_url.strip():
-            url = self.image_url.strip()
-            # If it's already a full URL or static path, return as is
-            if url.startswith(('http://', 'https://', '/static/', '/media/')):
-                return url
-            # If it's just a filename, try to find it in static assets
-            return f'/static/base/assets/{url}'
+            return self.image_url.strip()
         
         # Priority 2: Base64 image (persistent on Render)
         if self.image_base64:
@@ -68,17 +63,9 @@ class Herb(models.Model):
         # Priority 3: Try uploaded image (but will fail on Render after restart)
         if self.image:
             try:
-                # Check if file actually exists
-                if hasattr(self.image, 'url') and self.image.url:
-                    return self.image.url
-            except (ValueError, AttributeError, FileNotFoundError):
+                return self.image.url
+            except (ValueError, AttributeError):
                 pass
-        
-        # Priority 4: Try to find static image based on herb name
-        if self.name:
-            # Try most common naming pattern first
-            herb_name = self.name.lower().replace(" ", "-").replace("_", "-")
-            return f'/static/base/assets/{herb_name}.png'
         
         # Fallback: Default image
         return '/static/base/assets/herbs_292843331-removebg-preview.png'
