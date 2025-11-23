@@ -3137,9 +3137,9 @@ main {
                    data-condition="{{ condition_key }}">
                 <div class="image">
                   {% if herb.image %}
-                    <img src="{{ herb.image.url }}?cache={{ herb.pk }}_{{ herb.name|slugify }}_{{ forloop.counter }}" alt="{{ herb.name }}" data-herb-id="{{ herb.pk }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
+                    <img src="{{ herb.image.url }}?v={{ herb.pk }}&t={% now 'U' %}" alt="{{ herb.name }}" data-herb-id="{{ herb.pk }}" data-image-path="{{ herb.image }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
                   {% elif herb.image_url %}
-                    <img src="{{ herb.image_url }}?cache={{ herb.pk }}_{{ herb.name|slugify }}_{{ forloop.counter }}" alt="{{ herb.name }}" data-herb-id="{{ herb.pk }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
+                    <img src="{{ herb.image_url }}?v={{ herb.pk }}&t={% now 'U' %}" alt="{{ herb.name }}" data-herb-id="{{ herb.pk }}" data-image-path="{{ herb.image_url }}" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
                   {% else %}
                     <img src="{% static 'base/assets/herbs_292843331-removebg-preview.png' %}" alt="{{ herb.name }}" data-herb-id="{{ herb.pk }}">
                   {% endif %}
@@ -3227,7 +3227,7 @@ main {
       key: "{{ herb.name|slugify }}_{{ condition_key }}",
         name: "{{ herb.name }}",
         scientific_name: "{{ herb.scientific_name|default:'' }}",
-        img: "{% if herb.image %}{{ herb.image.url }}?cache={{ herb.pk }}_{{ herb.name|slugify }}_{{ forloop.counter }}{% elif herb.image_url %}{{ herb.image_url }}?cache={{ herb.pk }}_{{ herb.name|slugify }}_{{ forloop.counter }}{% else %}{% static 'base/assets/herbs_292843331-removebg-preview.png' %}{% endif %}",
+        img: "{% if herb.image %}{{ herb.image.url }}?v={{ herb.pk }}&t={% now 'U' %}{% elif herb.image_url %}{{ herb.image_url }}?v={{ herb.pk }}&t={% now 'U' %}{% else %}{% static 'base/assets/herbs_292843331-removebg-preview.png' %}{% endif %}",
         benefits: ["{{ herb.benefits|escapejs }}"],
         prescription: "{{ herb.prescription|escapejs }}",
         advice: "{{ herb.advice|escapejs }}",

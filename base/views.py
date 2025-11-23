@@ -305,21 +305,45 @@ def run_migrations(request):
 def debug_herb_images(request):
     herbs = Herb.objects.all()
     debug_info = []
+    image_paths = {}
     
     for herb in herbs:
+        image_path = str(herb.image) if herb.image else 'None'
+        if image_path != 'None':
+            if image_path not in image_paths:
+                image_paths[image_path] = []
+            image_paths[image_path].append(herb.name)
+        
         info = {
             'id': herb.id,
             'name': herb.name,
             'condition': herb.condition,
-            'image_field': str(herb.image) if herb.image else 'None',
+            'image_field': image_path,
             'image_url_field': herb.image_url or 'None',
             'get_image_url': herb.get_image_url(),
         }
         debug_info.append(info)
     
     html = '<h1>Herb Images Debug</h1>'
+    
+    # Show duplicates first
+    html += '<h2 style="color:red;">DUPLICATE IMAGE PATHS:</h2>'
+    duplicates_found = False
+    for path, herb_names in image_paths.items():
+        if len(herb_names) > 1:
+            duplicates_found = True
+            html += f'<div style="border:2px solid red; margin:10px; padding:10px; background:#ffe6e6;">'
+            html += f'<strong>Path:</strong> {path}<br>'
+            html += f'<strong>Used by:</strong> {', '.join(herb_names)}<br>'
+            html += '</div>'
+    
+    if not duplicates_found:
+        html += '<p style="color:green;">No duplicate image paths found!</p>'
+    
+    html += '<h2>ALL HERBS:</h2>'
     for info in debug_info:
-        html += f'<div style="border:1px solid #ccc; margin:10px; padding:10px;">'
+        border_color = 'red' if info['image_field'] in [p for p, names in image_paths.items() if len(names) > 1] else '#ccc'
+        html += f'<div style="border:2px solid {border_color}; margin:10px; padding:10px;">'
         html += f'<h3>{info["name"]} (ID: {info["id"]})</h3>'
         html += f'<p><strong>Condition:</strong> {info["condition"]}</p>'
         html += f'<p><strong>Image Field:</strong> {info["image_field"]}</p>'
@@ -328,5 +352,7 @@ def debug_herb_images(request):
         if info["get_image_url"] != '/static/base/assets/herbs_292843331-removebg-preview.png':
             html += f'<img src="{info["get_image_url"]}" style="max-width:100px; max-height:100px;">'
         html += '</div>'
+    
+    html += '<br><a href="/run-migrations/" style="background:blue;color:white;padding:10px;text-decoration:none;">Run Fix Command</a>'
     
     return HttpResponse(html)
