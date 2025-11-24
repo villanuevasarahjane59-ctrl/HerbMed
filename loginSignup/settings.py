@@ -126,7 +126,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'base', 'static'),
+    BASE_DIR / 'base' / 'static',
 ]
 
 # Disable WhiteNoise compression for images
@@ -134,8 +134,6 @@ WHITENOISE_SKIP_COMPRESS_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Media files configuration
 if os.environ.get('CLOUDINARY_URL'):

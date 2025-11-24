@@ -52,31 +52,34 @@ class Herb(models.Model):
         return []
 
     def get_image_url(self):
-        # Direct static path mapping for each herb
+        # Static files only - guaranteed to work
         herb_images = {
-            'ginger': '/static/base/assets/herbs/ginger.webp',
-            'turmeric': '/static/base/assets/herbs/Turmeric.png',
-            'aloe vera': '/static/base/assets/herbs/aloe-vera-leaves.png',
-            'lemon': '/static/base/assets/herbs/lemon (1).png',
-            'garlic': '/static/base/assets/herbs/garlic.webp',
-            'onion': '/static/base/assets/herbs/Onion-removebg-preview.png',
-            'lagundi': '/static/base/assets/herbs/lagundi1.webp',
-            'oregano': '/static/base/assets/herbs/Oregano-removebg-preview.png',
-            'sambong': '/static/base/assets/herbs/sambong-removebg-preview (1).png',
-            'banaba': '/static/base/assets/herbs/banaba1-removebg-preview.png'
+            'ginger': '/static/base/assets/Ginger.jpg',
+            'turmeric': '/static/base/assets/Turmeric.png',
+            'aloe vera': '/static/base/assets/aloe-vera-leaves.png',
+            'lemon': '/static/base/assets/lemon (1).png',
+            'garlic': '/static/base/assets/garlic.webp',
+            'onion': '/static/base/assets/Onion-removebg-preview.png',
+            'lagundi': '/static/base/assets/lagundi1.webp',
+            'oregano': '/static/base/assets/Oregano-removebg-preview.png',
+            'sambong': '/static/base/assets/sambong-removebg-preview (1).png',
+            'banaba': '/static/base/assets/banaba1-removebg-preview.png',
+            'papaya leaf': '/static/base/assets/Papaya-leaf.png',
+            'papaya': '/static/base/assets/Papaya-leaf.png',
+            'ampalaya': '/static/base/assets/ampalaya1.jpg',
+            'calamansi': '/static/base/assets/calamansi.png',
+            'malunggay': '/static/base/assets/malunggay.png',
+            'yerba buena': '/static/base/assets/yerba buena.png',
+            'akapulto': '/static/base/assets/akapulto.jpg',
+            'comfrey': '/static/base/assets/comfey.webp',
+            'guava': '/static/base/assets/Guava-Leaf.png',
+            'lemongrass': '/static/base/assets/lemongrass.jpg',
+            'tsaang gubat': '/static/base/assets/Tsaang Gubat.jpg',
+            'ulasimang bato': '/static/base/assets/ulasimang bato.jpg'
         }
         
-        # Use direct mapping first
         herb_name = self.name.lower()
-        if herb_name in herb_images:
-            return herb_images[herb_name]
-        
-        # Fallback to image_url field
-        if self.image_url and self.image_url.strip():
-            return self.image_url.strip()
-        
-        # Final fallback
-        return '/static/base/assets/herbs_292843331-removebg-preview.png'
+        return herb_images.get(herb_name, '/static/base/assets/herbs_292843331-removebg-preview.png')
     
     def __str__(self):
         return f"{self.name} ({self.get_condition_display()})"
