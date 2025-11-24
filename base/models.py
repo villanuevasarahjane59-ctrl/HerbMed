@@ -52,30 +52,30 @@ class Herb(models.Model):
         return []
 
     def get_image_url(self):
-        # Priority 1: Static image URL (works on all deployments)
+        # Direct static path mapping for each herb
+        herb_images = {
+            'ginger': '/static/base/assets/herbs/ginger.webp',
+            'turmeric': '/static/base/assets/herbs/Turmeric.png',
+            'aloe vera': '/static/base/assets/herbs/aloe-vera-leaves.png',
+            'lemon': '/static/base/assets/herbs/lemon (1).png',
+            'garlic': '/static/base/assets/herbs/garlic.webp',
+            'onion': '/static/base/assets/herbs/Onion-removebg-preview.png',
+            'lagundi': '/static/base/assets/herbs/lagundi1.webp',
+            'oregano': '/static/base/assets/herbs/Oregano-removebg-preview.png',
+            'sambong': '/static/base/assets/herbs/sambong-removebg-preview (1).png',
+            'banaba': '/static/base/assets/herbs/banaba1-removebg-preview.png'
+        }
+        
+        # Use direct mapping first
+        herb_name = self.name.lower()
+        if herb_name in herb_images:
+            return herb_images[herb_name]
+        
+        # Fallback to image_url field
         if self.image_url and self.image_url.strip():
-            url = self.image_url.strip()
-            # Ensure static URLs work properly
-            if url.startswith('/static/'):
-                return url
-            elif url.startswith('http'):
-                return url
-            else:
-                # Assume it's a static path without /static/ prefix
-                return f'/static/{url}'
+            return self.image_url.strip()
         
-        # Priority 2: Uploaded image (works locally, may fail on Render)
-        if self.image:
-            try:
-                return self.image.url
-            except (ValueError, AttributeError):
-                pass
-        
-        # Priority 3: Base64 fallback (if needed)
-        if self.image_base64:
-            return f'data:image/png;base64,{self.image_base64}'
-        
-        # Final fallback: Default image
+        # Final fallback
         return '/static/base/assets/herbs_292843331-removebg-preview.png'
     
     def __str__(self):

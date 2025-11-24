@@ -332,7 +332,7 @@ def fix_herb_images(request):
     
     try:
         out = StringIO()
-        call_command('restore_herb_images', stdout=out)
+        call_command('ensure_herbs', stdout=out)
         output = out.getvalue()
         return HttpResponse(f'Herb images restored successfully!<br><pre>{output}</pre>')
     except Exception as e:

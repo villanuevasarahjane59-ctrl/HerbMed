@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Static Image Test</title>
+</head>
+<body>
+    <h1>Static Image Test</h1>
+    
+    <h2>Testing Herb Images:</h2>
+    
+    <div>
+        <h3>Ginger</h3>
+        <img src="/static/base/assets/herbs/ginger.webp" alt="Ginger" style="width:200px;" 
+             onload="console.log('Ginger loaded')" 
+             onerror="console.log('Ginger failed'); this.style.border='2px solid red';">
+    </div>
+    
+    <div>
+        <h3>Turmeric</h3>
+        <img src="/static/base/assets/herbs/Turmeric.png" alt="Turmeric" style="width:200px;" 
+             onload="console.log('Turmeric loaded')" 
+             onerror="console.log('Turmeric failed'); this.style.border='2px solid red';">
+    </div>
+    
+    <div>
+        <h3>Aloe Vera</h3>
+        <img src="/static/base/assets/herbs/aloe-vera-leaves.png" alt="Aloe Vera" style="width:200px;" 
+             onload="console.log('Aloe Vera loaded')" 
+             onerror="console.log('Aloe Vera failed'); this.style.border='2px solid red';">
+    </div>
+    
+    <div>
+        <h3>Default Image (should work)</h3>
+        <img src="/static/base/assets/herbs_292843331-removebg-preview.png" alt="Default" style="width:200px;" 
+             onload="console.log('Default loaded')" 
+             onerror="console.log('Default failed'); this.style.border='2px solid red';">
+    </div>
+    
+</body>
+</html>
