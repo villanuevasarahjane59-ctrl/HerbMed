@@ -52,7 +52,7 @@ class Herb(models.Model):
         return []
 
     def get_image_url(self):
-        # Comprehensive static image mapping - works in all panels
+        # ALWAYS use hardcoded static images - ignore uploads completely
         herb_images = {
             # Common herbs with guaranteed static paths
             'ginger': '/static/base/assets/Ginger.jpg',
