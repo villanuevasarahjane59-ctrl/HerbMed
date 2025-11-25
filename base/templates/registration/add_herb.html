@@ -247,7 +247,6 @@
         // Add marker
         L.marker([lat, lng], { icon: herbPin }).addTo(addMap);
 
-
         // Add to list
         locations.push({lat: lat, lng: lng});
 
@@ -260,22 +259,40 @@
         document.getElementById("location_list").value = JSON.stringify(locations);
     });
 
-    // Auto-suggest static image path based on herb name
+    // Auto-suggest static image path based on herb name from hardcoded mapping
+    const herbImageMap = {
+        'ginger': '/static/base/assets/Ginger.jpg',
+        'turmeric': '/static/base/assets/Turmeric.png',
+        'aloe vera': '/static/base/assets/aloe-vera-leaves.png',
+        'lemon': '/static/base/assets/lemon (1).png',
+        'garlic': '/static/base/assets/garlic.webp',
+        'onion': '/static/base/assets/Onion-removebg-preview.png',
+        'lagundi': '/static/base/assets/lagundi1.webp',
+        'oregano': '/static/base/assets/Oregano-removebg-preview.png',
+        'sambong': '/static/base/assets/sambong-removebg-preview (1).png',
+        'banaba': '/static/base/assets/banaba1-removebg-preview.png',
+        'papaya leaf': '/static/base/assets/Papaya-leaf.png',
+        'papaya': '/static/base/assets/Papaya-leaf.png',
+        'ampalaya': '/static/base/assets/ampalaya1.jpg',
+        'calamansi': '/static/base/assets/calamansi.png',
+        'malunggay': '/static/base/assets/malunggay.png',
+        'yerba buena': '/static/base/assets/yerba buena.png'
+    };
+    
     document.getElementById('name').addEventListener('input', function() {
-        const herbName = this.value.toLowerCase().replace(/\s+/g, '-').replace(/_/g, '-');
+        const herbName = this.value.toLowerCase().trim();
         const imageUrlField = document.getElementById('image_url');
-        const conditionField = document.getElementById('condition');
         
         if (herbName && !imageUrlField.value) {
-            let suggestedPath = '/static/base/assets/';
-            
-            // Add condition folder if selected
-            if (conditionField.value) {
-                suggestedPath += conditionField.value + '/';
+            // Check if we have a predefined path
+            if (herbImageMap[herbName]) {
+                imageUrlField.value = herbImageMap[herbName];
+                imageUrlField.placeholder = 'Static path auto-filled';
+                // Update preview
+                document.getElementById('preview').src = herbImageMap[herbName];
+            } else {
+                imageUrlField.placeholder = 'Enter static path: /static/base/assets/your-image.jpg';
             }
-            
-            suggestedPath += herbName + '.png';
-            imageUrlField.placeholder = `Suggested: ${suggestedPath}`;
         }
     });
     
