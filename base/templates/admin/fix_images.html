@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h1>Fix Herb Images</h1>
+    <p>This will update all herbs to use hardcoded static images instead of uploaded files.</p>
+    <p><strong>Current herbs in database:</strong> {{ herb_count }}</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+            🔧 Fix All Herb Images Now
+        </button>
+    </form>
+    
+    <p style="margin-top: 20px; color: #666;">
+        This will clear all uploaded images and force herbs to use static file paths.
+    </p>
+</div>
+{% endblock %}

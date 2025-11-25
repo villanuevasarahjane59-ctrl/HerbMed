@@ -1,0 +1,10 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+    <li>
+        <a href="fix-images/" class="addlink" style="background-color: #28a745; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none;">
+            🔧 Fix All Herb Images
+        </a>
+    </li>
+{% endblock %}
