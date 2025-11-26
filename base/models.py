@@ -52,9 +52,16 @@ class Herb(models.Model):
         return []
 
     def get_image_url(self):
-        # ALWAYS use hardcoded static images - ignore uploads completely
+        # Priority 1: Use uploaded image (Cloudinary)
+        if self.image:
+            return self.image.url
+        
+        # Priority 2: Use image_url field
+        if self.image_url:
+            return self.image_url
+        
+        # Priority 3: Static fallback images
         herb_images = {
-            # Common herbs with guaranteed static paths
             'ginger': '/static/base/assets/Ginger.jpg',
             'turmeric': '/static/base/assets/Turmeric.png', 
             'aloe vera': '/static/base/assets/aloe-vera-leaves.png',
@@ -68,59 +75,16 @@ class Herb(models.Model):
             'papaya leaf': '/static/base/assets/Papaya-leaf.png',
             'papaya': '/static/base/assets/Papaya-leaf.png',
             'ampalaya': '/static/base/assets/ampalaya1.jpg',
-            'bitter gourd': '/static/base/assets/ampalaya1.jpg',
             'calamansi': '/static/base/assets/calamansi.png',
             'malunggay': '/static/base/assets/malunggay.png',
-            'moringa': '/static/base/assets/malunggay.png',
             'yerba buena': '/static/base/assets/yerba buena.png',
-            'akapulto': '/static/base/assets/akapulto.jpg',
-            'comfrey': '/static/base/assets/comfey.webp',
-            'guava': '/static/base/assets/Guava-Leaf.png',
-            'guava leaf': '/static/base/assets/Guava-Leaf.png',
-            'lemongrass': '/static/base/assets/lemongrass.jpg',
-            'tsaang gubat': '/static/base/assets/Tsaang Gubat.jpg',
-            'ulasimang bato': '/static/base/assets/ulasimang bato.jpg',
-            'pansit pansitan': '/static/base/assets/pansit pansitan.webp',
-            'lemon balm': '/static/base/assets/lemon_balm-removebg-preview.png',
-            'gotu kola': '/static/base/assets/gotu-kola-.png',
-            'niyog niyugan': '/static/base/assets/niyog niyugan.jpg',
-            
-            # Alternative names and variations
-            'luya': '/static/base/assets/Ginger.jpg',
-            'dilaw': '/static/base/assets/Turmeric.png',
-            'sabila': '/static/base/assets/aloe-vera-leaves.png',
-            'bawang': '/static/base/assets/garlic.webp',
-            'sibuyas': '/static/base/assets/Onion-removebg-preview.png',
-            'vitex': '/static/base/assets/lagundi1.webp',
-            'oregano leaves': '/static/base/assets/Oregano-removebg-preview.png',
-            'blumea balsamifera': '/static/base/assets/sambong-removebg-preview (1).png',
-            'lagerstroemia speciosa': '/static/base/assets/banaba1-removebg-preview.png',
-            'carica papaya': '/static/base/assets/Papaya-leaf.png',
-            'momordica charantia': '/static/base/assets/ampalaya1.jpg',
-            'citrofortunella microcarpa': '/static/base/assets/calamansi.png',
-            'moringa oleifera': '/static/base/assets/malunggay.png',
-            'clinopodium douglasii': '/static/base/assets/yerba buena.png',
-            'cassia alata': '/static/base/assets/akapulto.jpg',
-            'symphytum officinale': '/static/base/assets/comfey.webp',
-            'psidium guajava': '/static/base/assets/Guava-Leaf.png',
-            'cymbopogon citratus': '/static/base/assets/lemongrass.jpg',
-            'ehretia microphylla': '/static/base/assets/Tsaang Gubat.jpg',
-            'peperomia pellucida': '/static/base/assets/pansit pansitan.webp',
-            'melissa officinalis': '/static/base/assets/lemon_balm-removebg-preview.png',
-            'centella asiatica': '/static/base/assets/gotu-kola-.png'
         }
         
-        # Try exact match first
         herb_name = self.name.lower().strip()
         if herb_name in herb_images:
             return herb_images[herb_name]
         
-        # Try partial matches for compound names
-        for key, path in herb_images.items():
-            if key in herb_name or herb_name in key:
-                return herb_images[key]
-        
-        # Default fallback - always available
+        # Default fallback
         return '/static/base/assets/herbs_292843331-removebg-preview.png'
     
     def __str__(self):
