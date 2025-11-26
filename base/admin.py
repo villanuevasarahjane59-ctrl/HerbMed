@@ -11,10 +11,18 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 @admin.register(Herb)
 class HerbAdmin(admin.ModelAdmin):
-    list_display = ['name', 'scientific_name', 'condition', 'created_at']
+    list_display = ['name', 'scientific_name', 'condition', 'image_preview', 'created_at']
     list_filter = ['condition', 'created_at']
     search_fields = ['name', 'scientific_name']
-    readonly_fields = ['created_at']
+    readonly_fields = ['created_at', 'image_preview']
+    
+    def image_preview(self, obj):
+        from django.utils.html import format_html
+        return format_html(
+            '<img src="{}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;" />',
+            obj.get_image_url()
+        )
+    image_preview.short_description = 'Image Preview'
     
     def get_urls(self):
         urls = super().get_urls()

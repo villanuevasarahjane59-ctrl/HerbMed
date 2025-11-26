@@ -185,8 +185,8 @@
         
         <label for="image_url">OR Image URL/Path (Recommended for Deployment)</label>
         <input type="text" id="image_url" name="image_url" placeholder="e.g. /static/base/assets/cold/ginger.webp or https://example.com/image.jpg">
-        <small style="color: #666; font-size: 0.9rem;">For deployment stability, use static file paths like: /static/base/assets/cold/ginger.webp<br>
-        Available folders: cold/, cough/, fever/, skin/, wound/, or root assets/</small>
+        <small style="color: #666; font-size: 0.9rem;">Upload files directly or use Cloudinary URLs for permanent storage<br>
+        Uploaded images will be automatically stored in the cloud</small>
         
         <div class="preview-container">
             <img id="preview" src="{% static 'base/assets/herbs_292843331-removebg-preview.png' %}" alt="Preview" style="max-width: 150px; max-height: 150px; border-radius: 10px; border: 1px solid #ddd; object-fit: cover; display: block; margin: 0 auto;" onerror="this.src='{% static 'base/assets/herbs_292843331-removebg-preview.png' %}'">
@@ -291,7 +291,7 @@
                 // Update preview
                 document.getElementById('preview').src = herbImageMap[herbName];
             } else {
-                imageUrlField.placeholder = 'Enter static path: /static/base/assets/your-image.jpg';
+                imageUrlField.placeholder = 'Enter media path: /media/herbs/your-image.png';
             }
         }
     });

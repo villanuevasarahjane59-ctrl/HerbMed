@@ -123,18 +123,12 @@ def add_herb(request):
         locations_json = request.POST.get("location_list")
         locations = json.loads(locations_json) if locations_json else []
 
-        # Handle image logic - prioritize static paths for deployment
+        # Force static images only - ignore uploads completely
         final_image = None
-        final_image_url = image_url
+        final_image_url = ''
         
-        # If no image_url provided but we have an upload, suggest a static path
-        if image and not image_url:
-            herb_name = name.lower().replace(" ", "-").replace("_", "-")
-            final_image_url = f'/static/base/assets/{herb_name}.png'
-            # Still save the uploaded image for local development
-            final_image = image
-        elif image:
-            final_image = image
+        # Always use empty values to force hardcoded static mapping
+        # The model's get_image_url() will handle the actual image paths
         
         # Save herb
         herb = Herb.objects.create(
@@ -173,21 +167,11 @@ def edit_herb(request, pk):
         herb.prescription = request.POST.get("prescription", herb.prescription)
         herb.advice = request.POST.get("advice", herb.advice)
 
-        # Handle image updates with deployment-friendly logic
-        new_image = request.FILES.get("image")
-        new_image_url = request.POST.get("image_url")
+        # Force static images only - clear any uploads
+        herb.image = None
+        herb.image_url = ''
         
-        if new_image and not new_image_url:
-            # If uploading new image without URL, suggest static path
-            herb_name = herb.name.lower().replace(" ", "-").replace("_", "-")
-            herb.image_url = f'/static/base/assets/{herb_name}.png'
-            herb.image = new_image
-        elif new_image:
-            herb.image = new_image
-            if new_image_url:
-                herb.image_url = new_image_url
-        elif new_image_url:
-            herb.image_url = new_image_url
+        # The model's get_image_url() will handle the actual image paths
 
         # --- LOCATION HANDLING ---
         # 1) If a JSON 'location_list' was submitted (from the edit form), parse and save it:
@@ -409,5 +393,25 @@ def check_images(request):
         img_url = herb.get_image_url()
         html += f'<img src="{img_url}" style="max-width:150px; max-height:150px; border:1px solid red;">'
         html += '</div>'
+    
+    return HttpResponse(html)
+
+def force_static_images(request):
+    herbs = Herb.objects.all()
+    updated_count = 0
+    html = '<h1>Force Static Images</h1>'
+    
+    if request.method == 'POST':
+        for herb in herbs:
+            if herb.image or herb.image_url:
+                html += f'<p>Clearing: {herb.name}</p>'
+                herb.image = None
+                herb.image_url = ''
+                herb.save()
+                updated_count += 1
+        
+        html += f'<h2 style="color:green;">SUCCESS: Updated {updated_count} herbs!</h2>'
+    else:
+        html += '<form method="post"><button type="submit" style="background:red;color:white;padding:10px;">CLEAR ALL UPLOADS</button></form>'
     
     return HttpResponse(html)

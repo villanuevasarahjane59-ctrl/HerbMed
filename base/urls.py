@@ -29,6 +29,7 @@ urlpatterns = [
      path('run-migrations/', views.run_migrations, name='run_migrations'),
      path('debug-images/', views.debug_herb_images, name='debug_herb_images'),
      path('check-images/', views.check_images, name='check_images'),
+    path('force-static-images/', views.force_static_images, name='force_static_images'),
      path('fix-images/', views.fix_herb_images, name='fix_herb_images'),
 ]
 
