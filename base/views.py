@@ -123,14 +123,7 @@ def add_herb(request):
         locations_json = request.POST.get("location_list")
         locations = json.loads(locations_json) if locations_json else []
 
-        # Force static images only - ignore uploads completely
-        final_image = None
-        final_image_url = ''
-        
-        # Always use empty values to force hardcoded static mapping
-        # The model's get_image_url() will handle the actual image paths
-        
-        # Save herb
+        # Save herb with uploaded image
         herb = Herb.objects.create(
             name=name,
             scientific_name=scientific_name,
@@ -139,9 +132,9 @@ def add_herb(request):
             procedure=procedure,
             prescription=prescription,
             advice=advice,
-            image=final_image,
-            image_url=final_image_url,
-            locations=locations  # MUST USE JSONFIELD IN MODEL
+            image=image,
+            image_url=image_url,
+            locations=locations
         )
 
         messages.success(request, f"{name} has been added successfully!")
@@ -167,11 +160,11 @@ def edit_herb(request, pk):
         herb.prescription = request.POST.get("prescription", herb.prescription)
         herb.advice = request.POST.get("advice", herb.advice)
 
-        # Force static images only - clear any uploads
-        herb.image = None
-        herb.image_url = ''
-        
-        # The model's get_image_url() will handle the actual image paths
+        # Handle image updates
+        if request.FILES.get('image'):
+            herb.image = request.FILES.get('image')
+        if request.POST.get('image_url'):
+            herb.image_url = request.POST.get('image_url')
 
         # --- LOCATION HANDLING ---
         # 1) If a JSON 'location_list' was submitted (from the edit form), parse and save it:
